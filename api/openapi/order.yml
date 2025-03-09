@@ -88,7 +88,7 @@ components:
           items:
             $ref: "#/components/schemas/Item"
 
-        paymentsLink:
+        paymentLink:
           type: string
 
     Item:

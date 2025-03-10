@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/order/app"
+	"github.com/FacundoChan/gorder-v1/order/app/command"
 	"github.com/FacundoChan/gorder-v1/order/app/query"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -12,14 +14,30 @@ type HTTPServer struct {
 }
 
 func (H HTTPServer) PostCustomerCustomerIDOrders(c *gin.Context, customerID string) {
-	//TODO implement me
-	panic("implement me")
+	var request orderpb.CreateOrderRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	result, err := H.app.Commands.CreateOrder.Handle(c, command.CreateOrder{
+		CustomerID: request.CustomerID,
+		Items:      request.Items,
+	})
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "success",
+		"customer-id": request.CustomerID,
+		"order_id":    result.OrderID,
+	})
 }
 
 func (H HTTPServer) GetCustomerCustomerIDOrdersOrderID(c *gin.Context, customerID string, orderID string) {
 	o, err := H.app.Queries.GetCustomerOrder.Handle(c, query.GetCustomerOrder{
-		CustomerID: "fake-customer-id",
-		OrderID:    "fake-ID",
+		CustomerID: customerID,
+		OrderID:    orderID,
 	})
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{

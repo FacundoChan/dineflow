@@ -30,7 +30,7 @@ func NewMemoryOrderRepository() *MemoryOrderRepository {
 	}
 }
 
-func (m MemoryOrderRepository) Create(_ context.Context, order *domain.Order) (*domain.Order, error) {
+func (m *MemoryOrderRepository) Create(_ context.Context, order *domain.Order) (*domain.Order, error) {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 	res := &domain.Order{
@@ -38,19 +38,25 @@ func (m MemoryOrderRepository) Create(_ context.Context, order *domain.Order) (*
 		CustomerID:  order.CustomerID,
 		Status:      order.Status,
 		PaymentLink: order.PaymentLink,
-		Items:       nil,
+		Items:       order.Items,
 	}
 	m.store = append(m.store, res)
 	logrus.WithFields(logrus.Fields{
 		"input_order":        order,
 		"store_after_create": m.store,
-	}).Debug("memory_order_repo_create")
+	}).Info("memory_order_repo_create")
 	return res, nil
 }
 
-func (m MemoryOrderRepository) Get(_ context.Context, id, customerID string) (*domain.Order, error) {
+func (m *MemoryOrderRepository) Get(_ context.Context, id, customerID string) (*domain.Order, error) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
+
+	if logrus.GetLevel() == logrus.DebugLevel {
+		for i, order := range m.store {
+			logrus.Debugf("m.store[%d]: %+v", i, order)
+		}
+	}
 
 	for _, order := range m.store {
 		if order.ID == id && order.CustomerID == customerID {
@@ -63,7 +69,7 @@ func (m MemoryOrderRepository) Get(_ context.Context, id, customerID string) (*d
 	return nil, domain.NotFoundError{OrderID: id}
 }
 
-func (m MemoryOrderRepository) Update(ctx context.Context, order *domain.Order, updateFunc func(context.Context, *domain.Order) (*domain.Order, error)) error {
+func (m *MemoryOrderRepository) Update(ctx context.Context, order *domain.Order, updateFunc func(context.Context, *domain.Order) (*domain.Order, error)) error {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 

@@ -19,9 +19,27 @@ var stub = map[string]*orderpb.Item{
 		Quantity: 1000,
 		PriceID:  "stub_item_price_id",
 	},
+	"item-id-1": {
+		ID:       "item-id-1",
+		Name:     "item-name-1",
+		Quantity: 10,
+		PriceID:  "item-price-1",
+	},
+	"item-id-2": {
+		ID:       "item-id-2",
+		Name:     "item-name-2",
+		Quantity: 100,
+		PriceID:  "item-price-2",
+	},
+	"item-id-3": {
+		ID:       "item-id-3",
+		Name:     "item-name-3",
+		Quantity: 1000,
+		PriceID:  "item-price-3",
+	},
 }
 
-func NewMemoryyStockRepository() *MemoryStockRepository {
+func NewMemoryStockRepository() *MemoryStockRepository {
 	return &MemoryStockRepository{
 		lock: &sync.RWMutex{},
 		//store: make([]*stockpb.Item, 0),
@@ -29,9 +47,9 @@ func NewMemoryyStockRepository() *MemoryStockRepository {
 	}
 }
 
-func (m MemoryStockRepository) GetItems(ctx context.Context, ids []string) ([]*orderpb.Item, error) {
+func (m *MemoryStockRepository) GetItems(ctx context.Context, ids []string) ([]*orderpb.Item, error) {
 	m.lock.RLock()
-	defer m.lock.Unlock()
+	defer m.lock.RUnlock()
 	var (
 		res     []*orderpb.Item
 		missing []string

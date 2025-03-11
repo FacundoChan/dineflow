@@ -27,10 +27,10 @@ func (s StockGRPC) GetItems(ctx context.Context, itemsID []string) ([]*orderpb.I
 
 }
 
-func (s StockGRPC) CheckIfItemsInStock(ctx context.Context, items []*orderpb.ItemWithQuantity) error {
+func (s StockGRPC) CheckIfItemsInStock(ctx context.Context, items []*orderpb.ItemWithQuantity) (*stockpb.CheckIfItemsInStockResponse, error) {
 	response, err := s.client.CheckIfItemsInStock(ctx, &stockpb.CheckIfItemsInStockRequest{
 		Items: items,
 	})
 	logrus.Info("gRPC CheckIfItemsInStock response:", response)
-	return err
+	return response, err
 }

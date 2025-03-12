@@ -5,6 +5,7 @@ import (
 	"github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/common/logging"
 	"github.com/FacundoChan/gorder-v1/common/server"
+	"github.com/FacundoChan/gorder-v1/payment/infrastructure/consumer"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -32,6 +33,8 @@ func main() {
 		_ = closeCh()
 		_ = ch.Close()
 	}()
+
+	go consumer.NewConsumer().Listen(ch)
 
 	switch serverType {
 	case "http":

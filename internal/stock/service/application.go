@@ -11,8 +11,6 @@ import (
 
 func NewApplication(ctx context.Context) app.Application {
 	stockRepo := adapters.NewMemoryStockRepository()
-	// Uncomment the next line to enable debug output - default is info and higher
-	logrus.SetLevel(logrus.DebugLevel)
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.TodoMetrics{}
 

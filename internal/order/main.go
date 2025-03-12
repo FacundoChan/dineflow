@@ -5,6 +5,7 @@ import (
 	"github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/common/discovery"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
+	"github.com/FacundoChan/gorder-v1/common/logging"
 	"github.com/FacundoChan/gorder-v1/common/server"
 	"github.com/FacundoChan/gorder-v1/order/ports"
 	"github.com/FacundoChan/gorder-v1/order/service"
@@ -15,6 +16,7 @@ import (
 )
 
 func init() {
+	logging.Init()
 	if err := config.NewViperConfig(); err != nil {
 		logrus.Fatal(err)
 	}

@@ -25,8 +25,6 @@ func NewApplication(ctx context.Context) (app.Application, func()) {
 
 func newApplication(ctx context.Context, stockGRPC query.StockService) app.Application {
 	orderRepo := adapters.NewMemoryOrderRepository()
-	// Uncomment the next line to enable debug output - default is info and higher
-	logrus.SetLevel(logrus.DebugLevel)
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.TodoMetrics{}
 	return app.Application{

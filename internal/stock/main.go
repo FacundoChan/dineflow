@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/FacundoChan/gorder-v1/common/config"
+	"github.com/FacundoChan/gorder-v1/common/discovery"
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
 	"github.com/FacundoChan/gorder-v1/common/server"
 	"github.com/FacundoChan/gorder-v1/stock/ports"
@@ -23,8 +24,17 @@ func main() {
 	serverType := viper.GetString("stock.server-to-run")
 	logrus.Debugf("serviceName: %v, serverType: %v\n", serviceName, serverType)
 	ctx, cancel := context.WithCancel(context.Background())
-	app := service.NewApplication(ctx)
 	defer cancel()
+
+	app := service.NewApplication(ctx)
+
+	deregisterFunc, err := discovery.RegisterToConsul(ctx, serviceName)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	defer func() {
+		_ = deregisterFunc()
+	}()
 
 	switch serverType {
 	case "grpc":

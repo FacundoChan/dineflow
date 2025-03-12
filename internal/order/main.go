@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/FacundoChan/gorder-v1/common/config"
+	"github.com/FacundoChan/gorder-v1/common/discovery"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/common/server"
 	"github.com/FacundoChan/gorder-v1/order/ports"
@@ -25,6 +26,14 @@ func main() {
 	defer cancel()
 	app, cleanup := service.NewApplication(ctx)
 	defer cleanup()
+
+	deregisterFunc, err := discovery.RegisterToConsul(ctx, serviceName)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	defer func() {
+		_ = deregisterFunc()
+	}()
 
 	go server.RunGRPCServer(serviceName, func(s *grpc.Server) {
 		svc := ports.NewGRPCServer(app)

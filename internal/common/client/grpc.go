@@ -2,7 +2,9 @@ package client
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/discovery"
+	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -29,6 +31,27 @@ func NewStockGRPCClient(ctx context.Context) (client stockpb.StockServiceClient,
 	}
 
 	return stockpb.NewStockServiceClient(conn), conn.Close, nil
+}
+
+func NewOrderGRPCClient(ctx context.Context) (client orderpb.OrderServiceClient, close func() error, err error) {
+	grpcAddr, err := discovery.GetServiceAddr(ctx, viper.GetString("order.service-name"))
+	if err != nil {
+		return nil, func() error { return nil }, err
+	}
+	if grpcAddr == "" {
+		logrus.Warn("no order service gRPC address found")
+	}
+	grpcDialOptions, err := grpcDialOpts(grpcAddr)
+	if err != nil {
+		logrus.Error("grpcDialOpts failed: ", err)
+		return nil, func() error { return nil }, err
+	}
+	conn, err := grpc.NewClient(grpcAddr, grpcDialOptions...)
+	if err != nil {
+		return nil, func() error { return nil }, err
+	}
+
+	return orderpb.NewOrderServiceClient(conn), conn.Close, nil
 }
 
 func grpcDialOpts(addr string) ([]grpc.DialOption, error) {

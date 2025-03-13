@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/common/logging"
 	"github.com/FacundoChan/gorder-v1/common/server"
 	"github.com/FacundoChan/gorder-v1/payment/infrastructure/consumer"
+	"github.com/FacundoChan/gorder-v1/payment/service"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -22,6 +24,12 @@ func main() {
 	serverType := viper.GetString("payment.server-to-run")
 	paymentHandler := NewPaymentHandler()
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	application, cleanup := service.NewApplication(ctx)
+	defer cleanup()
+
 	ch, closeCh := broker.Connect(
 		viper.GetString("rabbit-mq.user"),
 		viper.GetString("rabbit-mq.password"),
@@ -34,7 +42,7 @@ func main() {
 		_ = ch.Close()
 	}()
 
-	go consumer.NewConsumer().Listen(ch)
+	go consumer.NewConsumer(application).Listen(ch)
 
 	switch serverType {
 	case "http":

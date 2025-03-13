@@ -8,7 +8,7 @@ import (
 )
 
 func Init() {
-	SetFormatter(logrus.StandardLogger())
+	//SetFormatter(logrus.StandardLogger())
 	logrus.SetLevel(logrus.DebugLevel)
 }
 

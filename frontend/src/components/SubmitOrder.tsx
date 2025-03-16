@@ -1,0 +1,135 @@
+// src/components/SubmitOrder.tsx
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+
+interface SubmitOrderProps {
+  items: { ID: string; Quantity: number }[];
+}
+
+const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentLink, setPaymentLink] = useState("");
+  const [isPolling, setIsPolling] = useState(false);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const generateCustomerID = () => {
+    // 生成一个8位随机字符串作为customerID
+    return Math.random().toString(36).substring(2, 10);
+  };
+
+  const pollOrderStatus = (customerID: string, orderID: string) => {
+    pollingIntervalRef.current = setInterval(async () => {
+      let order;
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8282/api/customer/${customerID}/orders/${orderID}`,
+        );
+        order = response.data.data.Order;
+
+        console.log(JSON.stringify(order));
+
+        console.log("Order status: ", order.Status);
+        if (!showPaymentModal && order.Status === "waiting_for_payment") {
+          setPaymentLink(order.PaymentLink);
+          console.log("link: ", paymentLink);
+          setShowPaymentModal(true);
+          setIsPolling(false);
+        }
+        if (order.Status === "paid") {
+          alert("支付成功");
+          if (pollingIntervalRef.current !== null) {
+            clearInterval(pollingIntervalRef.current);
+          }
+        }
+      } catch (error) {
+        console.error("轮询获取订单信息失败", error);
+      }
+    }, 5000);
+  };
+
+  const handleSubmit = async () => {
+    const customerID = generateCustomerID();
+    const postData = {
+      CustomerID: customerID,
+      Items: items,
+    };
+
+    console.log(
+      "POST address:",
+      `http://127.0.0.1:8282/api/customer/${customerID}/orders`,
+    );
+    console.log("提交订单", JSON.stringify(postData));
+
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8282/api/customer/${customerID}/orders`,
+        postData,
+      );
+      // response example：
+      // {
+      //   "customer-id": "mzk0uixa",
+      //   "message": "success",
+      //   "order_id": "1741950048",
+      //   "redirect_url": "http://localhost:8282/success?customerID=mzk0uixa&orderID=1741950048"
+      // }
+      console.log("Submit order successfully: ", response.data);
+
+      // setCustomerID(response.data.customer_id)
+      // setOrderID(response.data.order_id)
+
+      setIsPolling(true);
+      pollOrderStatus(response.data.customer_id, response.data.order_id);
+    } catch (error) {
+      console.error("Order Submit Error", error);
+    }
+  };
+
+  const handlePayment = () => {
+    // 示例：点击支付按钮后跳转到支付页面
+    window.location.href = paymentLink;
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current !== null) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div>
+      <button
+        className="rounded bg-green-500 p-2 text-white hover:bg-green-600"
+        onClick={handleSubmit}
+      >
+        提交订单
+      </button>
+      {isPolling && (
+        <div className="mt-4 flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+        </div>
+      )}
+      {showPaymentModal && (
+        <div className="bg-opacity-50 fixed inset-0 flex items-center justify-center bg-gray-400">
+          <div className="rounded-lg bg-white px-6 py-8 shadow-xl ring ring-gray-900/5 dark:bg-gray-800">
+            <h2 className="mt-5 text-base font-medium tracking-tight text-gray-900 dark:text-white">
+              支付窗口
+            </h2>
+            <p className="mt-2 mb-4 text-sm text-gray-500 dark:text-gray-400">
+              请点击下面按钮进行支付
+            </p>
+            <button
+              className="dark:text-white-400 rounded bg-blue-500 p-2 text-white hover:bg-sky-900 dark:bg-sky-800"
+              onClick={handlePayment}
+            >
+              立即支付
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SubmitOrder;

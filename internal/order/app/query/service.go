@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
 )

@@ -7,12 +7,13 @@
 package stockpb
 
 import (
-	orderpb "github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	orderpb "github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (

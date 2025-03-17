@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	grpcClient "github.com/FacundoChan/gorder-v1/common/client"
 	"github.com/FacundoChan/gorder-v1/common/metrics"
@@ -37,7 +38,7 @@ func NewApplication(ctx context.Context) (app.Application, func()) {
 	}
 }
 
-func newApplication(ctx context.Context, stockGRPC query.StockService, ch *amqp.Channel) app.Application {
+func newApplication(_ context.Context, stockGRPC query.StockService, ch *amqp.Channel) app.Application {
 	orderRepo := adapters.NewMemoryOrderRepository()
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.TodoMetrics{}

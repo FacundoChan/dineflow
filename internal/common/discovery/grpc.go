@@ -3,11 +3,12 @@ package discovery
 import (
 	"context"
 	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/FacundoChan/gorder-v1/common/discovery/consul"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"math/rand"
-	"time"
 )
 
 func RegisterToConsul(ctx context.Context, serviceName string) (func() error, error) {

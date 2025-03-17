@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/order/app"
 	"github.com/FacundoChan/gorder-v1/order/app/command"
@@ -44,7 +45,7 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 
 }
 
-func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Channel) {
+func (c *Consumer) handleMessage(msg amqp.Delivery, _ amqp.Queue, _ *amqp.Channel) {
 	order := &domain.Order{}
 	if err := json.Unmarshal(msg.Body, order); err != nil {
 		logrus.Infof("unmarshal order error: %s", err)

@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/payment/domain"
@@ -13,9 +17,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/webhook"
-	"io"
-	"net/http"
-	"os"
 )
 
 type PaymentHandler struct {

@@ -1,16 +1,20 @@
 package server
 
 import (
+	"time"
+
+	"github.com/sirupsen/logrus"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"time"
 )
 
 func RunHTTPServer(serviceName string, wrapper func(r *gin.Engine)) {
 	addr := viper.Sub(serviceName).GetString("http-addr")
 	if addr == "" {
 		// TODO: Warning log
+		logrus.Panic("addr can't be empty")
 	}
 	RunHTTPServerOnAddr(addr, wrapper)
 }
@@ -30,6 +34,6 @@ func RunHTTPServerOnAddr(addr string, wrapper func(r *gin.Engine)) {
 	wrapper(apiRouter)
 	apiRouter.Group("api/")
 	if err := apiRouter.Run(addr); err != nil {
-
+		panic(err)
 	}
 }

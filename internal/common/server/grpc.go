@@ -1,12 +1,13 @@
 package server
 
 import (
+	"net"
+
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	grpc_tags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	"net"
 )
 
 func init() {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/common/discovery"
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"

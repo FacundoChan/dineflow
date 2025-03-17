@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/metrics"
 	"github.com/FacundoChan/gorder-v1/stock/adapters"
 	"github.com/FacundoChan/gorder-v1/stock/app"

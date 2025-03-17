@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
 	"github.com/FacundoChan/gorder-v1/stock/app"
 	"github.com/FacundoChan/gorder-v1/stock/app/query"

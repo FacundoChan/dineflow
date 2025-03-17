@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/common/decorator"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
@@ -59,6 +60,9 @@ func NewCreateOrderHandler(
 
 func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*CreateOrderResult, error) {
 	validItems, err := c.validate(ctx, cmd.Items)
+	if err != nil {
+		logrus.WithError(err).Error("invalid items")
+	}
 
 	order, err := c.orderRepo.Create(ctx, &domain.Order{
 		ID:          "",
@@ -80,7 +84,7 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 	if err != nil {
 		return nil, err
 	}
-	c.channel.PublishWithContext(ctx, "", q.Name, false, false, amqp.Publishing{
+	err = c.channel.PublishWithContext(ctx, "", q.Name, false, false, amqp.Publishing{
 		ContentType:  "application/json",
 		DeliveryMode: amqp.Persistent,
 		Body:         marshalledOrder,

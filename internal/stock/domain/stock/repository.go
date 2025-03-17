@@ -3,8 +3,9 @@ package stock
 import (
 	"context"
 	"fmt"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"strings"
+
+	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 )
 
 type Repository interface {

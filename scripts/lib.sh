@@ -59,6 +59,11 @@ function log_info {
   >&2 echo -e "${COLOR_NONE}[INFO] ${current_time} $@${COLOR_NONE}"
 }
 
+function modules() {
+  modules=$(ls internal)
+  echo "${modules[@]}"
+}
+
 function modules_exp() {
   for m in $(modules); do
     echo -n "${m}/... "

@@ -29,3 +29,6 @@ go.work.sum
 
 # MacOS
 .DS_Store
+
+# history files
+.history/

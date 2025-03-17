@@ -22,7 +22,6 @@ func init() {
 func main() {
 	serviceName := viper.GetString("payment.service-name")
 	serverType := viper.GetString("payment.server-to-run")
-	paymentHandler := NewPaymentHandler()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -43,6 +42,8 @@ func main() {
 	}()
 
 	go consumer.NewConsumer(application).Listen(ch)
+
+	paymentHandler := NewPaymentHandler(ch)
 
 	switch serverType {
 	case "http":

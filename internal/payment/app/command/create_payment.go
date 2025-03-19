@@ -5,6 +5,7 @@ import (
 
 	"github.com/FacundoChan/gorder-v1/common/decorator"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
+	"github.com/FacundoChan/gorder-v1/common/tracing"
 	"github.com/FacundoChan/gorder-v1/payment/domain"
 	"github.com/sirupsen/logrus"
 )
@@ -33,6 +34,9 @@ func NewCreatePaymentHandler(processor domain.Processor, orderGRPC OrderService,
 
 // Handle implements decorator.CommandHandler.
 func (c createPaymentHandler) Handle(ctx context.Context, cmd CreatePayment) (string, error) {
+	_, span := tracing.Start(ctx, "stripe_processor.create_payment_link")
+	defer span.End()
+
 	link, err := c.processor.CreatePaymentLink(ctx, cmd.Order)
 	if err != nil {
 		return "", err

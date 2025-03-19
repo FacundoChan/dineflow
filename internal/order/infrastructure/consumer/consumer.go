@@ -3,6 +3,9 @@ package consumer
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+
+	"go.opentelemetry.io/otel"
 
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/order/app"
@@ -45,7 +48,12 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 
 }
 
-func (c *Consumer) handleMessage(msg amqp.Delivery, _ amqp.Queue, _ *amqp.Channel) {
+func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, _ *amqp.Channel) {
+	ctx := broker.ExtractRabbitMQHeaders(context.Background(), msg.Headers)
+	t := otel.Tracer("rabbit-mq")
+	_, span := t.Start(ctx, fmt.Sprintf("rabbit-mq.%s.consume", q.Name))
+	defer span.End()
+
 	order := &domain.Order{}
 	if err := json.Unmarshal(msg.Body, order); err != nil {
 		logrus.Infof("unmarshal order error: %s", err)
@@ -53,7 +61,7 @@ func (c *Consumer) handleMessage(msg amqp.Delivery, _ amqp.Queue, _ *amqp.Channe
 		return
 	}
 
-	_, err := c.app.Commands.UpdateOrder.Handle(context.Background(), command.UpdateOrder{
+	_, err := c.app.Commands.UpdateOrder.Handle(ctx, command.UpdateOrder{
 		Order: order,
 		UpdateFunc: func(ctx context.Context, order *domain.Order) (*domain.Order, error) {
 			if err := order.IsPaid(); err != nil {
@@ -67,6 +75,9 @@ func (c *Consumer) handleMessage(msg amqp.Delivery, _ amqp.Queue, _ *amqp.Channe
 		// TODO: Retry
 		return
 	}
+
+	span.AddEvent("order.updated")
+
 	_ = msg.Ack(false)
 	logrus.Info("order updated")
 

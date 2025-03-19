@@ -17,6 +17,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/webhook"
+	"go.opentelemetry.io/otel"
 )
 
 type PaymentHandler struct {
@@ -92,10 +93,18 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 				ctx.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
-			err = h.channel.PublishWithContext(ctx, broker.EventOrderPaid, "", false, false, amqp.Publishing{
+
+			tr := otel.Tracer("rabbit-mq")
+			mqCtx, span := tr.Start(ctx, fmt.Sprintf("rabbit-mq.%s.publish", broker.EventOrderPaid))
+			defer span.End()
+
+			headers := broker.InjectRabbitMQHeaders(mqCtx)
+
+			err = h.channel.PublishWithContext(mqCtx, broker.EventOrderPaid, "", false, false, amqp.Publishing{
 				ContentType:  "application/json",
 				DeliveryMode: amqp.Persistent,
 				Body:         marshalledOrder,
+				Headers:      headers,
 			})
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, err.Error())

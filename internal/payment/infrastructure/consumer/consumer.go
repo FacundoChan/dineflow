@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
@@ -10,6 +11,7 @@ import (
 	"github.com/FacundoChan/gorder-v1/payment/app/command"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
 )
 
 type Consumer struct {
@@ -45,6 +47,11 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue) {
 	logrus.Infof("Received message from %s: %s", q.Name, msg.Body)
 
+	ctx := broker.ExtractRabbitMQHeaders(context.Background(), msg.Headers)
+	tr := otel.Tracer("rabbit-mq")
+	_, span := tr.Start(ctx, fmt.Sprintf("rabbit-mq.%s.consume", q.Name))
+	defer span.End()
+
 	order := &orderpb.Order{}
 	if err := json.Unmarshal(msg.Body, order); err != nil {
 		logrus.Infof("failed to unmarshal msg to order, err: %v", err)
@@ -52,7 +59,7 @@ func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue) {
 		return
 	}
 
-	if _, err := c.app.Commands.CreatePayment.Handle(context.TODO(), command.CreatePayment{
+	if _, err := c.app.Commands.CreatePayment.Handle(ctx, command.CreatePayment{
 		Order: order,
 	}); err != nil {
 		// TODO: Retry
@@ -61,6 +68,7 @@ func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue) {
 		return
 	}
 
+	span.AddEvent("payment.created")
 	_ = msg.Ack(false)
 	logrus.Info("successfully consumed")
 }

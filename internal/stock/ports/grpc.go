@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
+	"github.com/FacundoChan/gorder-v1/common/tracing"
 	"github.com/FacundoChan/gorder-v1/stock/app"
 	"github.com/FacundoChan/gorder-v1/stock/app/query"
 	"github.com/sirupsen/logrus"
@@ -18,6 +19,8 @@ func NewGRPCServer(app app.Application) *GRPCServer {
 }
 
 func (G GRPCServer) GetItems(ctx context.Context, request *stockpb.GetItemsRequest) (*stockpb.GetItemsResponse, error) {
+	_, span := tracing.Start(ctx, "GetItems")
+	defer span.End()
 	logrus.Info("rpc_request_in, stock.GetItems")
 	defer func() {
 		logrus.Info("rpc_request_out, stock.GetItems")
@@ -38,6 +41,9 @@ func (G GRPCServer) GetItems(ctx context.Context, request *stockpb.GetItemsReque
 }
 
 func (G GRPCServer) CheckIfItemsInStock(ctx context.Context, request *stockpb.CheckIfItemsInStockRequest) (*stockpb.CheckIfItemsInStockResponse, error) {
+	_, span := tracing.Start(ctx, "CheckIfItemsInStock")
+	defer span.End()
+
 	logrus.Info("rpc_request_in, stock.CheckIfItemsInStock")
 	defer func() {
 		logrus.Info("rpc_request_out, stock.CheckIfItemsInStock")

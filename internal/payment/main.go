@@ -7,6 +7,7 @@ import (
 	"github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/common/logging"
 	"github.com/FacundoChan/gorder-v1/common/server"
+	"github.com/FacundoChan/gorder-v1/common/tracing"
 	"github.com/FacundoChan/gorder-v1/payment/infrastructure/consumer"
 	"github.com/FacundoChan/gorder-v1/payment/service"
 	"github.com/sirupsen/logrus"
@@ -26,6 +27,12 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	shutdown, err := tracing.InitJaegerProvider(viper.GetString("jaeger.url"), serviceName)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	defer shutdown(ctx)
 
 	application, cleanup := service.NewApplication(ctx)
 	defer cleanup()

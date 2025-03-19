@@ -7,6 +7,7 @@ import (
 	grpc_tags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -28,6 +29,7 @@ func RunGRPCServer(serviceName string, registerServer func(server *grpc.Server))
 func RunGRPCServerOnAddr(addr string, registerServer func(server *grpc.Server)) {
 	logrusEntry := logrus.NewEntry(logrus.StandardLogger())
 	grpcServer := grpc.NewServer(
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.ChainStreamInterceptor(
 			grpc_tags.StreamServerInterceptor(grpc_tags.WithFieldExtractor(grpc_tags.CodeGenRequestFieldExtractor)),
 			grpc_logrus.StreamServerInterceptor(logrusEntry),

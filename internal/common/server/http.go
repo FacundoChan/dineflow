@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -31,9 +32,16 @@ func RunHTTPServerOnAddr(addr string, wrapper func(r *gin.Engine)) {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	setMiddlewares(apiRouter)
+
 	wrapper(apiRouter)
 	apiRouter.Group("api/")
 	if err := apiRouter.Run(addr); err != nil {
 		panic(err)
 	}
+}
+
+func setMiddlewares(r *gin.Engine) {
+	r.Use(gin.Recovery())
+	r.Use(otelgin.Middleware("default_server"))
 }

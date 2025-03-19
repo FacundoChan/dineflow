@@ -6,6 +6,8 @@ import (
 	"net"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+
 	"github.com/FacundoChan/gorder-v1/common/discovery"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
@@ -60,6 +62,7 @@ func NewOrderGRPCClient(ctx context.Context) (client orderpb.OrderServiceClient,
 func grpcDialOpts(_ string) []grpc.DialOption {
 	return []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	}
 }
 
@@ -88,6 +91,7 @@ func waitFor(addr string, timeout time.Duration) bool {
 			_, err := net.Dial("tcp", addr)
 			if err == nil {
 				close(portAvailable)
+				return
 			}
 
 			time.Sleep(200 * time.Millisecond)

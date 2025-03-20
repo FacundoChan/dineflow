@@ -8,9 +8,10 @@ import (
 
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/common/decorator"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/order/app/query"
+	"github.com/FacundoChan/gorder-v1/order/convertor"
 	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
+	"github.com/FacundoChan/gorder-v1/order/entity"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
@@ -18,7 +19,7 @@ import (
 
 type CreateOrder struct {
 	CustomerID string
-	Items      []*orderpb.ItemWithQuantity
+	Items      []*entity.ItemWithQuantity
 }
 
 type CreateOrderResult struct {
@@ -104,18 +105,18 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 	return &CreateOrderResult{OrderID: order.ID}, nil
 }
 
-func (c createOrderHandler) validate(ctx context.Context, items []*orderpb.ItemWithQuantity) ([]*orderpb.Item, error) {
+func (c createOrderHandler) validate(ctx context.Context, items []*entity.ItemWithQuantity) ([]*entity.Item, error) {
 	if len(items) == 0 {
 		return nil, errors.New("at least one item is required")
 	}
 
 	items = packItems(items)
-	response, err := c.stockGRPC.CheckIfItemsInStock(ctx, items)
+	response, err := c.stockGRPC.CheckIfItemsInStock(ctx, convertor.NewItemWithQuantityConvertor().EntitiesToProtos(items))
 	if err != nil {
 		return nil, err
 	}
 
-	return response.Items, nil
+	return convertor.NewItemConvertor().ProtosToEntities(response.Items), nil
 	//var ids []string
 	//for _, i := range items {
 	//	ids = append(ids, i.ID)
@@ -124,7 +125,7 @@ func (c createOrderHandler) validate(ctx context.Context, items []*orderpb.ItemW
 	//return c.stockGRPC.GetItems(ctx, ids)
 }
 
-func packItems(items []*orderpb.ItemWithQuantity) []*orderpb.ItemWithQuantity {
+func packItems(items []*entity.ItemWithQuantity) []*entity.ItemWithQuantity {
 	merged := make(map[string]int32)
 	for _, item := range items {
 		merged[item.ID] += item.Quantity
@@ -133,9 +134,9 @@ func packItems(items []*orderpb.ItemWithQuantity) []*orderpb.ItemWithQuantity {
 		logrus.Debugf("merged item %v with quantity: %d", id, quantity)
 
 	}
-	var res []*orderpb.ItemWithQuantity
+	var res []*entity.ItemWithQuantity
 	for id, quantity := range merged {
-		res = append(res, &orderpb.ItemWithQuantity{
+		res = append(res, &entity.ItemWithQuantity{
 			ID:       id,
 			Quantity: quantity,
 		})

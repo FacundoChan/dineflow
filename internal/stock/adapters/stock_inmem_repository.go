@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
 )
@@ -51,6 +53,7 @@ func NewMemoryStockRepository() *MemoryStockRepository {
 func (m *MemoryStockRepository) GetItems(ctx context.Context, ids []string) ([]*orderpb.Item, error) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
+	logrus.Debug("GetItems called")
 	var (
 		res     []*orderpb.Item
 		missing []string

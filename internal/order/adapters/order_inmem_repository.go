@@ -42,6 +42,15 @@ func (m *MemoryOrderRepository) Create(_ context.Context, order *domain.Order) (
 		Items:       order.Items,
 	}
 	m.store = append(m.store, res)
+	if logrus.GetLevel() == logrus.DebugLevel {
+		logrus.Debugln("order_immem_repo_create")
+		for i, order := range m.store {
+			logrus.Debugf("m.store[%d]: %+v\n", i, order)
+			for i, o := range order.Items {
+				logrus.Debugf("     order-item[%d]: %+v", i, o)
+			}
+		}
+	}
 	logrus.WithFields(logrus.Fields{
 		"input_order":        order,
 		"store_after_create": m.store,
@@ -54,8 +63,12 @@ func (m *MemoryOrderRepository) Get(_ context.Context, id, customerID string) (*
 	defer m.lock.RUnlock()
 
 	if logrus.GetLevel() == logrus.DebugLevel {
+		logrus.Debugln("order_immem_repo_get")
 		for i, order := range m.store {
-			logrus.Debugf("m.store[%d]: %+v", i, order)
+			logrus.Debugf("m.store[%d]: %+v\n", i, order)
+			for i, o := range order.Items {
+				logrus.Debugf("     order-item[%d]: %+v", i, o)
+			}
 		}
 	}
 

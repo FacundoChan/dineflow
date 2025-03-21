@@ -18,7 +18,7 @@ function install_if_not_exist() {
 
 install_if_not_exist go-cleanarch github.com/roblaszczak/go-cleanarch@latest
 
-readonly LINT_VERSION="1.64.7"
+readonly LINT_VERSION="1.64.8"
 NEED_INSTALL=false
 if command -v golangci-lint >/dev/null 2>&1; then
   CURRENT_VERSION=$(golangci-lint --version | awk '{print $4}' | sed 's/^v//')

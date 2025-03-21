@@ -26,8 +26,7 @@ func NewGRPCServer(app app.Application) *GRPCServer {
 func (G GRPCServer) CreateOrder(ctx context.Context, request *orderpb.CreateOrderRequest) (*emptypb.Empty, error) {
 	_, err := G.app.Commands.CreateOrder.Handle(ctx, command.CreateOrder{
 		CustomerID: request.CustomerID,
-		// Items:      request.Items,
-		Items: convertor.NewItemWithQuantityConvertor().ProtosToEntities(request.Items),
+		Items:      convertor.NewItemWithQuantityConvertor().ProtosToEntities(request.Items),
 	})
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -52,7 +51,6 @@ func (G GRPCServer) UpdateOrder(ctx context.Context, request *orderpb.Order) (_ 
 		request.CustomerID,
 		request.Status,
 		request.PaymentLink,
-		// request.Items
 		convertor.NewItemConvertor().ProtosToEntities(request.Items),
 	)
 	if err != nil {

@@ -75,6 +75,26 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 		logrus.WithError(err).Error("invalid items")
 	}
 
+	// HACK: should be updated
+	var validItemsStrings []string
+	for _, item := range validItems {
+		validItemsStrings = append(validItemsStrings, item.ID)
+	}
+	items, err := c.stockGRPC.GetItems(ctx, validItemsStrings)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	for _, item := range items {
+		for _, validItem := range validItems {
+			if item.ID == validItem.ID {
+				validItem.Name = item.Name
+				validItem.PriceID = item.PriceID
+				break
+			}
+		}
+	}
+
 	order, err := c.orderRepo.Create(ctx, &domain.Order{
 		ID:          "",
 		CustomerID:  cmd.CustomerID,

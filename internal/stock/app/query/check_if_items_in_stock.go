@@ -31,6 +31,7 @@ func NewCheckIfItemsInStockHandler(stockRepo domain.Repository, logger *logrus.E
 }
 
 func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfItemsInStock) ([]*orderpb.Item, error) {
+	// TODO: CheckIfItemsInStock NOT DONE YET
 	var res []*orderpb.Item
 	for _, item := range query.Items {
 		res = append(res, &orderpb.Item{

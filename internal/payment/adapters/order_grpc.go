@@ -24,7 +24,8 @@ func (o OrderRPC) UpdateOrder(ctx context.Context, order *orderpb.Order) error {
 
 	_, err := o.client.UpdateOrder(ctx, order)
 	if err != nil {
-		logrus.Infof("payment adapter failed to update order: %v", err)
+		logrus.Errorf("payment adapter failed to update order: %v", err)
+		return err
 	}
 	return nil
 }

@@ -48,20 +48,28 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 
 }
 
-func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, _ *amqp.Channel) {
+func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Channel) {
 	ctx := broker.ExtractRabbitMQHeaders(context.Background(), msg.Headers)
 	t := otel.Tracer("rabbit-mq")
 	_, span := t.Start(ctx, fmt.Sprintf("rabbit-mq.%s.consume", q.Name))
 	defer span.End()
 
+	var err error
+	defer func() {
+		if err != nil {
+			_ = msg.Nack(false, false)
+		} else {
+			_ = msg.Ack(false)
+		}
+	}()
+
 	order := &domain.Order{}
 	if err := json.Unmarshal(msg.Body, order); err != nil {
 		logrus.Infof("unmarshal order error: %s", err)
-		_ = msg.Nack(false, false)
 		return
 	}
 
-	_, err := c.app.Commands.UpdateOrder.Handle(ctx, command.UpdateOrder{
+	_, err = c.app.Commands.UpdateOrder.Handle(ctx, command.UpdateOrder{
 		Order: order,
 		UpdateFunc: func(ctx context.Context, order *domain.Order) (*domain.Order, error) {
 			if err := order.IsPaid(); err != nil {
@@ -72,13 +80,12 @@ func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, _ *amqp.Channe
 	})
 	if err != nil {
 		logrus.Infof("update order error: %s, orderID=%s", err, order.ID)
-		// TODO: Retry
+		if err = broker.HandleRetry(ctx, ch, &msg); err != nil {
+			logrus.Warnf("retry_error handling retry, msgID=%s, err=%v", msg.MessageId, err)
+		}
 		return
 	}
 
 	span.AddEvent("order.updated")
-
-	_ = msg.Ack(false)
 	logrus.Info("order updated")
-
 }

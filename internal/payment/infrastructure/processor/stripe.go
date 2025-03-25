@@ -33,7 +33,7 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 	var items []*stripe.CheckoutSessionLineItemParams
 
 	for _, item := range order.Items {
-		logrus.Debugf("adding item %+v", item)
+		// logrus.Debugf("adding item %+v", item)
 		items = append(items, &stripe.CheckoutSessionLineItemParams{
 			// TODO: Price
 			//Price:    stripe.String(item.PriceID),
@@ -58,7 +58,7 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 		SuccessURL: stripe.String(fmt.Sprintf("%s?customerID=%s&orderID=%s", successURL, order.CustomerID, order.ID)),
 	}
 	result, err := session.New(params)
-	logrus.Debugf("result generated from StripeProccessor %+v", result)
+	// logrus.Debugf("result generated from StripeProccessor %+v", result)
 	if err != nil {
 		return "", err
 	}

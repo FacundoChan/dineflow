@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/config"
+	_ "github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/common/discovery"
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
 	"github.com/FacundoChan/gorder-v1/common/logging"
@@ -18,9 +18,6 @@ import (
 
 func init() {
 	logging.Init()
-	if err := config.NewViperConfig(); err != nil {
-		logrus.Fatal(err)
-	}
 }
 
 func main() {

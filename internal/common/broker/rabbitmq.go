@@ -7,8 +7,10 @@ import (
 
 	"go.opentelemetry.io/otel"
 
+	_ "github.com/FacundoChan/gorder-v1/common/config"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -18,8 +20,7 @@ const (
 )
 
 var (
-	// maxRetryCount = viper.GetInt64("rabbit-mq.max-retry")
-	maxRetryCount int64 = 3
+	maxRetryCount = viper.GetInt64("rabbit-mq.max-retry")
 )
 
 func Connect(user, password, host, port string) (*amqp.Channel, func() error) {

@@ -76,33 +76,32 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 	}
 
 	// HACK: should be updated
-	//
-	// var validItemsStrings []string
-	// for _, item := range validItems {
-	// 	validItemsStrings = append(validItemsStrings, item.ID)
-	// }
-	// items, err := c.stockGRPC.GetItems(ctx, validItemsStrings)
-	// if err != nil {
-	// 	logrus.Error(err)
-	// }
 
-	// for _, item := range items {
-	// 	for _, validItem := range validItems {
-	// 		if item.ID == validItem.ID {
-	// 			validItem.Name = item.Name
-	// 			validItem.PriceID = item.PriceID
-	// 			break
-	// 		}
-	// 	}
-	// }
+	var validItemsStrings []string
+	for _, item := range validItems {
+		validItemsStrings = append(validItemsStrings, item.ID)
+	}
+	items, err := c.stockGRPC.GetItems(ctx, validItemsStrings)
+	if err != nil {
+		logrus.Error(err)
+	}
 
-	order, err := c.orderRepo.Create(ctx, &domain.Order{
-		ID:          "",
-		CustomerID:  cmd.CustomerID,
-		Status:      "",
-		PaymentLink: "",
-		Items:       validItems,
-	})
+	for _, item := range items {
+		for _, validItem := range validItems {
+			if item.ID == validItem.ID {
+				validItem.Name = item.Name
+				validItem.PriceID = item.PriceID
+				break
+			}
+		}
+	}
+	logrus.Debugf("create_order:\n")
+	for i, item := range validItems {
+		logrus.Debugf("     item[%d]=%v\n", i, item)
+	}
+
+	pendingOrder, err := domain.NewPendingOrder(cmd.CustomerID, validItems)
+	order, err := c.orderRepo.Create(ctx, pendingOrder)
 
 	if err != nil {
 		return nil, err

@@ -73,6 +73,7 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 	validItems, err := c.validate(ctx, cmd.Items)
 	if err != nil {
 		logrus.WithError(err).Error("invalid items")
+		return nil, err
 	}
 
 	// HACK: should be updated

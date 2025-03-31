@@ -44,14 +44,14 @@ function gen() {
   prepare_dir "internal/common/client/$service"
 
   run go tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen \
-    -generate types -o "$output_dir/openapi_types.gen.go" -package "$package" "api/openapi/$service.yml"
+    -generate types -o "$output_dir/openapi_types.gen.go" -package "$package" -config api/openapi/cfg.yaml "api/openapi/$service.yml"
   run go tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen \
-    -generate "$GEN_SERVER" -o "$output_dir/openapi_api.gen.go" -package "$package" "api/openapi/$service.yml"
+    -generate "$GEN_SERVER" -o "$output_dir/openapi_api.gen.go" -package "$package" -config api/openapi/cfg.yaml "api/openapi/$service.yml"
 
   run go tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen \
-    -generate client -o "internal/common/client/$service/openapi_client.gen.go" -package "$service" "api/openapi/$service.yml"
+    -generate client -o "internal/common/client/$service/openapi_client.gen.go" -package "$service" -config api/openapi/cfg.yaml "api/openapi/$service.yml"
   run go tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen \
-    -generate types -o "internal/common/client/$service/openapi_types.gen.go" -package "$service" "api/openapi/$service.yml"
+    -generate types -o "internal/common/client/$service/openapi_types.gen.go" -package "$service" -config api/openapi/cfg.yaml "api/openapi/$service.yml"
 }
 
 gen internal/order/ports ports order

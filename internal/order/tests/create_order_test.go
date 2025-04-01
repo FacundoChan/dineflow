@@ -33,15 +33,15 @@ func TestCreateOrder_success(t *testing.T) {
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
-				Id:       "test-item-1",
+				Id:       "prod_S38OduC65V5pGR",
 				Quantity: 10,
 			},
 			{
-				Id:       "test-item-2",
+				Id:       "prod_RvYfkiUza8gBMr",
 				Quantity: 5,
 			},
 			{
-				Id:       "test-item-1",
+				Id:       "prod_RvYfkiUza8gBMr",
 				Quantity: 1,
 			},
 		},
@@ -49,7 +49,6 @@ func TestCreateOrder_success(t *testing.T) {
 
 	response := getResponse(t, customerID, requestBody)
 
-	t.Logf("body=%s", string(response.Body))
 	assert.Equal(t, 200, response.StatusCode())
 	assert.Equal(t, 0, response.JSON200.Errorno)
 }
@@ -65,12 +64,38 @@ func TestCreateOrder_invalid_prams(t *testing.T) {
 	assert.Equal(t, 2, response.JSON200.Errorno)
 }
 
+func TestCreateOrder_invalid_items(t *testing.T) {
+	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
+		CustomerId: customerID,
+		Items: []sw.ItemWithQuantity{
+			{
+				Id:       "prod_S38OduC65V5pGR",
+				Quantity: 10,
+			},
+			{
+				Id:       "prod_RvYfkiUza8gBMr",
+				Quantity: 5,
+			},
+			{
+				Id:       "invalid_id",
+				Quantity: 1,
+			},
+		},
+	}
+
+	response := getResponse(t, customerID, requestBody)
+
+	assert.Equal(t, 200, response.StatusCode())
+	assert.Equal(t, 2, response.JSON200.Errorno)
+}
+
 func getResponse(t *testing.T, customerID string, body sw.PostCustomerCustomerIdOrdersJSONRequestBody) *sw.PostCustomerCustomerIdOrdersResponse {
 	t.Helper()
 	client, err := sw.NewClientWithResponses(server)
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Logf("getResponse body=%+v", body)
 	response, err := client.PostCustomerCustomerIdOrdersWithResponse(ctx, customerID, body)
 	if err != nil {
 		t.Fatal(err)

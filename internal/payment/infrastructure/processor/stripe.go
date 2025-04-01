@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/checkout/session"
+	"github.com/stripe/stripe-go/v81/product"
 )
 
 type StripeProcessor struct {
@@ -33,11 +34,13 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 	var items []*stripe.CheckoutSessionLineItemParams
 
 	for _, item := range order.Items {
-		// logrus.Debugf("adding item %+v", item)
+		logrus.Debugf("adding item %+v", item)
+		priceID, err := s.GetPriceByProductID(ctx, item.ID)
+		if err != nil {
+			logrus.Errorf("ID: %s not found in stripe", item.ID)
+		}
 		items = append(items, &stripe.CheckoutSessionLineItemParams{
-			// TODO: Price
-			//Price:    stripe.String(item.PriceID),
-			Price:    stripe.String("price_1R1hXmDqhAs8dvRuCqn7mlgS"),
+			Price:    stripe.String(priceID),
 			Quantity: stripe.Int64(int64(item.Quantity)),
 		})
 	}
@@ -63,4 +66,18 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 		return "", err
 	}
 	return result.URL, nil
+}
+
+func (s StripeProcessor) GetPriceByProductID(ctx context.Context, pid string) (string, error) {
+	// TODO: Logging
+
+	stripe.Key = s.apiKey
+
+	result, err := product.Get(pid, &stripe.ProductParams{})
+	logrus.Debugf("PID: %s, result: %+v\n", pid, result)
+	logrus.Debugf("PID: %s, result.DefaultPrice.ID: %+v\n", pid, result.DefaultPrice.ID)
+	if err != nil {
+		return "", err
+	}
+	return result.DefaultPrice.ID, nil
 }

@@ -15,6 +15,7 @@ type MemoryStockRepository struct {
 	store map[string]*orderpb.Item
 }
 
+// TODO: to be deleted
 var stub = map[string]*orderpb.Item{
 	"item_id": {
 		ID:       "foo_item",
@@ -39,6 +40,16 @@ var stub = map[string]*orderpb.Item{
 		Name:     "item-name-3",
 		Quantity: 1000,
 		PriceID:  "item-price-3",
+	},
+	"prod_S3CrGrzAS1MZsK": { // GRODER-V1-ITEM-1
+		ID:       "prod_S3CrGrzAS1MZsK",
+		Name:     "GRODER-V1-ITEM-1",
+		Quantity: 10,
+	},
+	"prod_S3Cr3l2WHdiL53": { // GRODER-V1-ITEM-2
+		ID:       "prod_S3Cr3l2WHdiL53",
+		Name:     "GRODER-V1-ITEM-2",
+		Quantity: 20,
 	},
 }
 

@@ -31,7 +31,8 @@ func (q queryLoggingDecorator[C, R]) Handle(ctx context.Context, cmd C) (result 
 		}
 	}()
 
-	return q.base.Handle(ctx, cmd)
+	result, err = q.base.Handle(ctx, cmd)
+	return result, err
 }
 
 // C: Command
@@ -56,7 +57,8 @@ func (q commandLoggingDecorator[C, R]) Handle(ctx context.Context, cmd C) (resul
 		}
 	}()
 
-	return q.base.Handle(ctx, cmd)
+	result, err = q.base.Handle(ctx, cmd)
+	return result, err
 }
 
 func generateActionName(cmd any) string {

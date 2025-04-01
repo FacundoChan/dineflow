@@ -7,6 +7,7 @@ import (
 	"github.com/FacundoChan/gorder-v1/common/tracing"
 	"github.com/FacundoChan/gorder-v1/stock/app"
 	"github.com/FacundoChan/gorder-v1/stock/app/query"
+	"github.com/FacundoChan/gorder-v1/stock/convertor"
 	"github.com/sirupsen/logrus"
 )
 
@@ -49,7 +50,7 @@ func (G GRPCServer) CheckIfItemsInStock(ctx context.Context, request *stockpb.Ch
 		logrus.Info("rpc_request_out, stock.CheckIfItemsInStock")
 	}()
 	items, err := G.app.Queries.CheckIfItemsInStock.Handle(ctx, query.CheckIfItemsInStock{
-		Items: request.Items,
+		Items: convertor.NewItemWithQuantityConvertor().ProtosToEntities(request.Items),
 	})
 	if err != nil {
 		logrus.WithError(err).Error("rpc_request_err")
@@ -58,6 +59,6 @@ func (G GRPCServer) CheckIfItemsInStock(ctx context.Context, request *stockpb.Ch
 
 	return &stockpb.CheckIfItemsInStockResponse{
 		InStock: 1,
-		Items:   items,
+		Items:   convertor.NewItemConvertor().EntitiesToProtos(items),
 	}, nil
 }

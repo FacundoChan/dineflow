@@ -32,7 +32,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Order"
+                $ref: "#/components/schemas/Response"
 
         default:
           description: todo
@@ -64,7 +64,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Order"
+                $ref: "#/components/schemas/Response"
 
         default:
           description: todo
@@ -146,3 +146,19 @@ components:
           type: integer
           format: int32
 
+    Response:
+      type: object
+      properties:
+        errorno:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+        trace_id:
+          type: string
+      required:
+        - errorno
+        - message
+        - data
+        - trace_id

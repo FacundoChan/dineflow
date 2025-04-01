@@ -14,8 +14,10 @@ func StructuredLog(l *logrus.Entry) gin.HandlerFunc {
 		elapsed := time.Since(start)
 		l.WithFields(logrus.Fields{
 			"time_elapsed_ms": elapsed.Milliseconds(),
-			"request_url":     ctx.Request.RequestURI,
+			"request_uri":     ctx.Request.RequestURI,
+			"remote_addr":     ctx.Request.RemoteAddr,
 			"client_ip":       ctx.ClientIP(),
+			"full_path":       ctx.FullPath(),
 		}).Info("request_out")
 	}
 }

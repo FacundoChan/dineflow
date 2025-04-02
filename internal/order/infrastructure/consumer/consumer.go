@@ -37,18 +37,19 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 		logrus.Fatal(err)
 	}
 
-	var forever = make(chan bool)
+	forever := make(chan struct{})
 	go func() {
 		for msg := range msgs {
 			c.handleMessage(msg, q, ch)
 		}
 
 	}()
-	<-forever
 
+	<-forever
 }
 
 func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Channel) {
+	logrus.Infof("kitchen receive a msg from %s=%v", q.Name, string(msg.Body))
 	ctx := broker.ExtractRabbitMQHeaders(context.Background(), msg.Headers)
 	t := otel.Tracer("rabbit-mq")
 	_, span := t.Start(ctx, fmt.Sprintf("rabbit-mq.%s.consume", q.Name))

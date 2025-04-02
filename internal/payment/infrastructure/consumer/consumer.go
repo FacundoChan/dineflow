@@ -33,15 +33,15 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 		logrus.Warnf("Failed to consume message: queue=%s, err=%s", q.Name, err)
 	}
 
-	var forever chan struct{}
+	forever := make(chan struct{})
 
 	go func() {
 		for msg := range msgs {
 			c.handleMessage(msg, q, ch)
 		}
-		<-forever
 	}()
 
+	<-forever
 }
 
 func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Channel) {

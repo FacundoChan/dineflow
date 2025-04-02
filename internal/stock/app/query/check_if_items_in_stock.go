@@ -43,11 +43,6 @@ func NewCheckIfItemsInStockHandler(
 	)
 }
 
-// TODO: Deprecated
-var stub = map[string]string{
-	"default": "price_1R927iDqhAs8dvRucG4zQfO9", // DEFAULT-ORDER
-}
-
 func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfItemsInStock) ([]*entity.Item, error) {
 	// TODO: CheckIfItemsInStock NOT DONE YET: Should be pulled from database or Stripe
 	var res []*entity.Item

@@ -44,10 +44,10 @@ func newViperConfig() error {
 func getRelativePathFromCaller() (relativePath string, err error) {
 	callerPwd, err := os.Getwd()
 	if err != nil {
-		return
+		return "", err
 	}
 	_, here, _, _ := runtime.Caller(0)
 	relativePath, err = filepath.Rel(callerPwd, filepath.Dir(here))
 	fmt.Printf("caller from: %s, here: %s, relativePath: %s\n", callerPwd, here, relativePath)
-	return
+	return relativePath, err
 }

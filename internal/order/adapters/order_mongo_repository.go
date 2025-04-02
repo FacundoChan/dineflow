@@ -50,7 +50,7 @@ func (r *OrderRepositoryMongo) Create(ctx context.Context, order *domain.Order) 
 	}
 	created = order
 	order.ID = res.InsertedID.(primitive.ObjectID).Hex()
-	return
+	return created, err
 }
 
 func (r *OrderRepositoryMongo) logWithTag(tag string, err error, result any) {
@@ -116,12 +116,13 @@ func (r *OrderRepositoryMongo) Update(ctx context.Context, order *domain.Order, 
 
 	session, err := r.db.StartSession()
 	if err != nil {
-		return
+		return err
 	}
 	defer session.EndSession(ctx)
 
 	if err = session.StartTransaction(); err != nil {
-		return
+		return err
+
 	}
 	defer func() {
 		if err == nil {
@@ -134,11 +135,11 @@ func (r *OrderRepositoryMongo) Update(ctx context.Context, order *domain.Order, 
 	// inside transaction
 	oldOrder, err := r.Get(ctx, order.ID, order.CustomerID)
 	if err != nil {
-		return
+		return err
 	}
 	updated, err := updateFunc(ctx, order)
 	if err != nil {
-		return
+		return err
 	}
 	mongoID, _ := primitive.ObjectIDFromHex(oldOrder.ID)
 	res, err := r.collection().UpdateOne(
@@ -154,10 +155,10 @@ func (r *OrderRepositoryMongo) Update(ctx context.Context, order *domain.Order, 
 	)
 
 	if err != nil {
-		return
+		return err
 	}
 
 	r.logWithTag("finished_update", err, res)
 
-	return
+	return err
 }

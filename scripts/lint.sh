@@ -2,6 +2,7 @@
 
 set -euo pipefail || echo "Warning: Failed to set options"
 
+export PATH="$(go env GOPATH)/bin:$PATH"
 source ./scripts/lib.sh
 
 function install_if_not_exist() {
@@ -33,7 +34,7 @@ else
 fi
 
 if [ "$NEED_INSTALL" == true ]; then
-  run curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin "v$(LINT_VERSION)"
+  run curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" "v$LINT_VERSION"
 fi
 
 run go-cleanarch

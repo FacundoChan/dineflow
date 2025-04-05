@@ -32,3 +32,6 @@ go.work.sum
 
 # history files
 .history/
+
+# MySQL data
+mysql_data/

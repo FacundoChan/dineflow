@@ -37,11 +37,11 @@ func TestCreateOrder_success(t *testing.T) {
 				Quantity: 10,
 			},
 			{
-				Id:       "prod_RvYfkiUza8gBMr",
+				Id:       "prod_S3Cr3l2WHdiL53",
 				Quantity: 5,
 			},
 			{
-				Id:       "prod_RvYfkiUza8gBMr",
+				Id:       "prod_S3Cr3l2WHdiL53",
 				Quantity: 1,
 			},
 		},
@@ -64,7 +64,7 @@ func TestCreateOrder_invalid_prams(t *testing.T) {
 	assert.Equal(t, 2, response.JSON200.Errorno)
 }
 
-func TestCreateOrder_invalid_items(t *testing.T) {
+func TestCreateOrder_invalid_item_id(t *testing.T) {
 	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
@@ -73,11 +73,36 @@ func TestCreateOrder_invalid_items(t *testing.T) {
 				Quantity: 10,
 			},
 			{
-				Id:       "prod_RvYfkiUza8gBMr",
+				Id:       "prod_S3Cr3l2WHdiL53",
 				Quantity: 5,
 			},
 			{
 				Id:       "invalid_id",
+				Quantity: 1,
+			},
+		},
+	}
+
+	response := getResponse(t, customerID, requestBody)
+
+	assert.Equal(t, 200, response.StatusCode())
+	assert.Equal(t, 2, response.JSON200.Errorno)
+}
+
+func TestCreateOrder_invalid_item_quantity(t *testing.T) {
+	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
+		CustomerId: customerID,
+		Items: []sw.ItemWithQuantity{
+			{
+				Id:       "prod_S38OduC65V5pGR",
+				Quantity: 10,
+			},
+			{
+				Id:       "prod_S3Cr3l2WHdiL53",
+				Quantity: -5,
+			},
+			{
+				Id:       "prod_S3Cr3l2WHdiL53",
 				Quantity: 1,
 			},
 		},

@@ -41,5 +41,12 @@ mongo:
   db-name: "order"
   collection-name: "order"
 
+mysql:
+  user: root
+  password: root
+  host: 127.0.0.1
+  port: 3307
+  db-name: gorder_v1
+
 stripe-key: "${STRIPE_KEY}"
 endpoint-stripe-secret: "$ENDPOINT_STRIPE_SECRET"

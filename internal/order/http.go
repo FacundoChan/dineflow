@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	client "github.com/FacundoChan/gorder-v1/common/client/order"
@@ -32,6 +33,10 @@ func (H HTTPServer) PostCustomerCustomerIdOrders(c *gin.Context, customerID stri
 	if err = c.ShouldBindJSON(&request); err != nil {
 		return
 	}
+	if err = H.validate(request); err != nil {
+		return
+	}
+
 	result, err := H.app.Commands.CreateOrder.Handle(c.Request.Context(), command.CreateOrder{
 		CustomerID: request.CustomerId,
 		Items:      convertor.NewItemWithQuantityConvertor().ClientsToEntities(request.Items),
@@ -70,4 +75,13 @@ func (H HTTPServer) GetCustomerCustomerIdOrdersOrderId(c *gin.Context, customerI
 	}
 
 	response.Order = convertor.NewOrderConvertor().EntityToClient(o)
+}
+
+func (H HTTPServer) validate(request client.CreateOrderRequest) error {
+	for _, v := range request.Items {
+		if v.Quantity <= 0 {
+			return errors.New("quantity must be positive")
+		}
+	}
+	return nil
 }

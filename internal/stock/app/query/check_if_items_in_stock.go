@@ -45,6 +45,10 @@ func NewCheckIfItemsInStockHandler(
 
 func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfItemsInStock) ([]*entity.Item, error) {
 	// TODO: CheckIfItemsInStock NOT DONE YET: Should be pulled from database or Stripe
+	if err := c.checkStock(ctx, query.Items); err != nil {
+		return nil, err
+	}
+
 	var res []*entity.Item
 	for _, item := range query.Items {
 		priceID, err := c.stripeAPI.GetPriceByProductID(ctx, item.ID)
@@ -58,5 +62,50 @@ func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfIte
 			PriceID:  priceID,
 		})
 	}
+
+	// TODO: update the stock
 	return res, nil
+}
+
+func (c checkIfItemsInStockHandler) checkStock(ctx context.Context, queryItems []*entity.ItemWithQuantity) error {
+	var ids []string
+	for _, item := range queryItems {
+		ids = append(ids, item.ID)
+	}
+	records, err := c.stockRepo.GetStock(ctx, ids)
+	if err != nil {
+		return err
+	}
+	idQuantityMap := make(map[string]int32)
+	for _, record := range records {
+		idQuantityMap[record.ID] += record.Quantity
+	}
+	var (
+		ok             = true
+		notEnoughItems []struct {
+			ID   string
+			Want int32
+			Have int32
+		}
+	)
+	for _, item := range queryItems {
+		if item.Quantity > idQuantityMap[item.ID] {
+			ok = false
+			notEnoughItems = append(notEnoughItems, struct {
+				ID   string
+				Want int32
+				Have int32
+			}{
+				ID:   item.ID,
+				Want: item.Quantity,
+				Have: idQuantityMap[item.ID],
+			})
+		}
+	}
+
+	if ok {
+		return nil
+	}
+
+	return domain.ExceedStockError{NotEnoughItems: notEnoughItems}
 }

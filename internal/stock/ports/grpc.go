@@ -37,7 +37,7 @@ func (G GRPCServer) GetItems(ctx context.Context, request *stockpb.GetItemsReque
 	}
 
 	return &stockpb.GetItemsResponse{
-		Items: items,
+		Items: convertor.NewItemConvertor().EntitiesToProtos(items),
 	}, nil
 }
 

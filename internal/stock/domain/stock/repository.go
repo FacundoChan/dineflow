@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
+	"github.com/FacundoChan/gorder-v1/stock/entity"
 )
 
 type Repository interface {
-	GetItems(ctx context.Context, ids []string) ([]*orderpb.Item, error)
+	GetItems(ctx context.Context, ids []string) ([]*entity.Item, error)
+	GetStock(ctx context.Context, ids []string) ([]*entity.ItemWithQuantity, error)
 }
 
 type NotFoundError struct {
@@ -18,4 +19,20 @@ type NotFoundError struct {
 
 func (e NotFoundError) Error() string {
 	return fmt.Sprintf("stock repository: not found: %s", strings.Join(e.MissingIDs, ","))
+}
+
+type ExceedStockError struct {
+	NotEnoughItems []struct {
+		ID   string
+		Want int32
+		Have int32
+	}
+}
+
+func (e ExceedStockError) Error() string {
+	var info []string
+	for _, v := range e.NotEnoughItems {
+		info = append(info, fmt.Sprintf("product_id=%s, want %v, have %v", v.ID, v.Want, v.Have))
+	}
+	return fmt.Sprintf("stock repository: not enough stock for [%s]", strings.Join(info, ", "))
 }

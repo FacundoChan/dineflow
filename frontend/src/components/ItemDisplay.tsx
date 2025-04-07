@@ -2,14 +2,14 @@
 import React from "react";
 
 interface ItemDisplayProps {
-  item: { ID: string; Quantity: number };
+  item: { id: string; quantity: number };
 }
 
 const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
   return (
     <div className="mb-2 flex items-center justify-between rounded bg-gray-100 p-4">
-      <span className="font-medium">{item.ID}</span>
-      <span>数量: {item.Quantity}</span>
+      <span className="font-medium">{item.id}</span>
+      <span>数量: {item.quantity}</span>
     </div>
   );
 };

@@ -2,15 +2,15 @@
 import React, { useState } from "react";
 
 interface AddItemProps {
-  onAdd: (item: { ID: string; Quantity: number }) => void;
+  onAdd: (item: { id: string; quantity: number }) => void;
 }
 
 const AddItem: React.FC<AddItemProps> = ({ onAdd }) => {
-  const [selectedItem, setSelectedItem] = useState("item-1");
+  const [selectedItem, setSelectedItem] = useState("prod_S38OduC65V5pGR");
   const [quantity, setQuantity] = useState(1);
 
   const handleAdd = () => {
-    onAdd({ ID: selectedItem, Quantity: quantity });
+    onAdd({ id: selectedItem, quantity: quantity });
   };
 
   return (
@@ -21,9 +21,8 @@ const AddItem: React.FC<AddItemProps> = ({ onAdd }) => {
         value={selectedItem}
         onChange={(e) => setSelectedItem(e.target.value)}
       >
-        <option value="item-1">item-1</option>
-        <option value="item-2">item-2</option>
-        <option value="item-3">item-3</option>
+        <option value="prod_S38OduC65V5pGR">item-1</option>
+        <option value="prod_RvYfkiUza8gBMr">item-2</option>
       </select>
       <label className="mb-2 font-medium">数量:</label>
       <input

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 interface SubmitOrderProps {
-  items: { ID: string; Quantity: number }[];
+  items: { id: string; quantity: number }[];
 }
 
 const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
@@ -21,21 +21,30 @@ const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
     pollingIntervalRef.current = setInterval(async () => {
       let order;
       try {
+        console.log(
+          "GET ",
+          `http://127.0.0.1:8282/api/customer/${customerID}/orders/${orderID}`,
+        );
         const response = await axios.get(
           `http://127.0.0.1:8282/api/customer/${customerID}/orders/${orderID}`,
         );
+
+        console.log(JSON.stringify(response.data));
         order = response.data.data.Order;
 
-        console.log(JSON.stringify(order));
-
-        console.log("Order status: ", order.Status);
-        if (!showPaymentModal && order.Status === "waiting_for_payment") {
-          setPaymentLink(order.PaymentLink);
-          console.log("link: ", paymentLink);
+        console.log(
+          "showPaymentModal:",
+          showPaymentModal,
+          " Order status: ",
+          order.status,
+        );
+        if (!showPaymentModal && order.status === "waiting_for_payment") {
+          setPaymentLink(order.payment_link);
+          console.log("link: ", order.payment_link);
           setShowPaymentModal(true);
           setIsPolling(false);
         }
-        if (order.Status === "paid") {
+        if (order.status === "paid") {
           alert("支付成功");
           if (pollingIntervalRef.current !== null) {
             clearInterval(pollingIntervalRef.current);
@@ -50,8 +59,8 @@ const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
   const handleSubmit = async () => {
     const customerID = generateCustomerID();
     const postData = {
-      CustomerID: customerID,
-      Items: items,
+      customer_id: customerID,
+      items: items,
     };
 
     console.log(
@@ -65,20 +74,14 @@ const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
         `http://127.0.0.1:8282/api/customer/${customerID}/orders`,
         postData,
       );
-      // response example：
-      // {
-      //   "customer-id": "mzk0uixa",
-      //   "message": "success",
-      //   "order_id": "1741950048",
-      //   "redirect_url": "http://localhost:8282/success?customerID=mzk0uixa&orderID=1741950048"
-      // }
       console.log("Submit order successfully: ", response.data);
 
-      // setCustomerID(response.data.customer_id)
-      // setOrderID(response.data.order_id)
-
       setIsPolling(true);
-      pollOrderStatus(response.data.customer_id, response.data.order_id);
+      console.log("response.data", response.data);
+      pollOrderStatus(
+        response.data.data.customer_id,
+        response.data.data.order_id,
+      );
     } catch (error) {
       console.error("Order Submit Error", error);
     }

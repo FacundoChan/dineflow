@@ -5,7 +5,7 @@ interface ProductAddProps {
 }
 
 const ProductAdd: React.FC<ProductAddProps> = ({ onAdd }) => {
-  const [selectedItem, setSelectedItem] = useState("item-1");
+  const [selectedItem, setSelectedItem] = useState("item-id-1");
   const [quantity, setQuantity] = useState(1);
 
   const handleAdd = () => {
@@ -22,9 +22,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ onAdd }) => {
         onChange={(e) => setSelectedItem(e.target.value)}
         className="mr-2 rounded border p-2"
       >
-        <option value="item-1">item-1</option>
-        <option value="item-2">item-2</option>
-        <option value="item-3">item-3</option>
+        <option value="item-id-1">item-id-1</option>
+        <option value="item-id-2">item-id-2</option>
+        <option value="item-id-3">item-id-3</option>
       </select>
       <input
         type="number"

@@ -12,4 +12,5 @@ CREATE TABLE `order_stock` (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
+INSERT INTO order_stock(product_id, quantity)
+VALUES ('prod_S3CrGrzAS1MZsK', 10), ('prod_S3Cr3l2WHdiL53', 100);

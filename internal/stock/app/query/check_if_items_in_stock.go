@@ -2,12 +2,19 @@ package query
 
 import (
 	"context"
+	"strings"
+	"time"
 
 	"github.com/FacundoChan/gorder-v1/common/decorator"
+	"github.com/FacundoChan/gorder-v1/common/handler/redis"
 	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
 	"github.com/FacundoChan/gorder-v1/stock/infrastructure/integration"
 	"github.com/sirupsen/logrus"
+)
+
+const (
+	redisLockPrefix = "check_stock_"
 )
 
 type CheckIfItemsInStock struct {
@@ -44,11 +51,17 @@ func NewCheckIfItemsInStockHandler(
 }
 
 func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfItemsInStock) ([]*entity.Item, error) {
-	// TODO: CheckIfItemsInStock NOT DONE YET: Should be pulled from database or Stripe
-	if err := c.checkStock(ctx, query.Items); err != nil {
+	if err := lock(ctx, getLockKey(query)); err != nil {
 		return nil, err
 	}
 
+	defer func() {
+		if err := unlock(ctx, getLockKey(query)); err != nil {
+			logrus.Warnf("redis unlock failed, err=%v", err)
+		}
+	}()
+
+	// Get PriceID from Stripe
 	var res []*entity.Item
 	for _, item := range query.Items {
 		priceID, err := c.stripeAPI.GetPriceByProductID(ctx, item.ID)
@@ -63,11 +76,32 @@ func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfIte
 		})
 	}
 
-	// TODO: update the stock
+	// Update the stock
+	if err := c.checkStock(ctx, query.Items); err != nil {
+		return nil, err
+	}
+
 	return res, nil
 }
 
+func getLockKey(query CheckIfItemsInStock) string {
+	var ids []string
+	for _, i := range query.Items {
+		ids = append(ids, i.ID)
+	}
+	return redisLockPrefix + strings.Join(ids, "_")
+}
+
+func lock(ctx context.Context, key string) error {
+	return redis.SetNX(ctx, redis.LocalClient(), key, "1", 5*time.Minute)
+}
+
+func unlock(ctx context.Context, key string) error {
+	return redis.Del(ctx, redis.LocalClient(), key)
+}
+
 func (c checkIfItemsInStockHandler) checkStock(ctx context.Context, queryItems []*entity.ItemWithQuantity) error {
+	logrus.Debug("checkStock called")
 	var ids []string
 	for _, item := range queryItems {
 		ids = append(ids, item.ID)
@@ -104,6 +138,24 @@ func (c checkIfItemsInStockHandler) checkStock(ctx context.Context, queryItems [
 	}
 
 	if ok {
+		c.stockRepo.UpdateStock(ctx, queryItems, func(ctx context.Context,
+			existing []*entity.ItemWithQuantity,
+			query []*entity.ItemWithQuantity,
+		) ([]*entity.ItemWithQuantity, error) {
+			var newItems []*entity.ItemWithQuantity
+			for _, e := range existing {
+				for _, q := range query {
+					if e.ID == q.ID {
+						newItems = append(newItems, &entity.ItemWithQuantity{
+							ID:       e.ID,
+							Quantity: e.Quantity - q.Quantity,
+						})
+						break
+					}
+				}
+			}
+			return newItems, nil
+		})
 		return nil
 	}
 

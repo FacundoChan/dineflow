@@ -48,5 +48,15 @@ mysql:
   port: 3307
   db-name: gorder_v1
 
+redis:
+  local:
+    ip: 127.0.0.1
+    port: 6379
+    pool_size: 100
+    max_connection: 100
+    conn_timeout: 1000
+    read_timeout: 1000
+    write_timeout: 100
+
 stripe-key: "${STRIPE_KEY}"
 endpoint-stripe-secret: "$ENDPOINT_STRIPE_SECRET"

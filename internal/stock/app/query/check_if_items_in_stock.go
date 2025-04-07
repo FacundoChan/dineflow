@@ -10,6 +10,7 @@ import (
 	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
 	"github.com/FacundoChan/gorder-v1/stock/infrastructure/integration"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -52,7 +53,7 @@ func NewCheckIfItemsInStockHandler(
 
 func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfItemsInStock) ([]*entity.Item, error) {
 	if err := lock(ctx, getLockKey(query)); err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "redis lock error: key=%s", getLockKey(query))
 	}
 
 	defer func() {

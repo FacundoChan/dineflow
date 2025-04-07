@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/FacundoChan/gorder-v1/common/broker"
@@ -12,9 +11,11 @@ import (
 	"github.com/FacundoChan/gorder-v1/order/convertor"
 	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
 	"github.com/FacundoChan/gorder-v1/order/entity"
+	"github.com/pkg/errors"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
+	"google.golang.org/grpc/status"
 )
 
 type CreateOrder struct {
@@ -123,7 +124,7 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 		Headers:      headers,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "publish event error q.Name=%s", q.Name)
 	}
 
 	return &CreateOrderResult{OrderID: order.ID}, nil
@@ -137,7 +138,7 @@ func (c createOrderHandler) validate(ctx context.Context, items []*entity.ItemWi
 	items = packItems(items)
 	response, err := c.stockGRPC.CheckIfItemsInStock(ctx, convertor.NewItemWithQuantityConvertor().EntitiesToProtos(items))
 	if err != nil {
-		return nil, err
+		return nil, status.Convert(err).Err()
 	}
 
 	return convertor.NewItemConvertor().ProtosToEntities(response.Items), nil

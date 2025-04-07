@@ -2,10 +2,12 @@ package adapters
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/FacundoChan/gorder-v1/common/utils"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
 	"github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -41,7 +43,7 @@ func (m MySQLStockRepository) GetItems(ctx context.Context, ids []string) ([]*en
 func (m MySQLStockRepository) GetStock(ctx context.Context, ids []string) ([]*entity.ItemWithQuantity, error) {
 	data, err := m.db.BatchGetStockByProductIDs(ctx, ids)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "BatchGetStockByProductIDs failed")
 	}
 	var result []*entity.ItemWithQuantity
 	for _, d := range data {
@@ -67,7 +69,7 @@ func (m MySQLStockRepository) UpdateStock(ctx context.Context,
 		var dest []*persistent.StockModel
 		// HACK: table name should be variable
 		if err = tx.Table("order_stock").Where("product_id IN ?", getIDFromEntities(data)).Find(&dest).Error; err != nil {
-			return err
+			return errors.Wrap(err, "failed to get product_id")
 		}
 		existing := m.unmarshalFromDatabase(dest)
 		logrus.WithFields(logrus.Fields{
@@ -85,7 +87,7 @@ func (m MySQLStockRepository) UpdateStock(ctx context.Context,
 		for _, updatedData := range updated {
 			// HACK: table name should be variable
 			if err = tx.Table("order_stock").Where("product_id = ?", updatedData.ID).Update("quantity", updatedData.Quantity).Error; err != nil {
-				return err
+				return errors.Wrap(err, fmt.Sprintf("unable to update %v+", updatedData))
 			}
 		}
 

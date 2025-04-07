@@ -53,7 +53,7 @@ func (c createPaymentHandler) Handle(ctx context.Context, cmd CreatePayment) (st
 	logrus.Debug("UpdateOrder in createPaymentHandler")
 	err = c.orderGRPC.UpdateOrder(ctx, newOrder)
 	if err != nil {
-		logrus.Debugf("UpdateOrder failed")
+		logrus.WithError(err).Debug("UpdateOrder failed")
 	}
 
 	return link, err

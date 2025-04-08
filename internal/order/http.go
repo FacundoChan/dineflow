@@ -1,12 +1,13 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
 	client "github.com/FacundoChan/gorder-v1/common/client/order"
+	"github.com/FacundoChan/gorder-v1/common/consts"
 
 	"github.com/FacundoChan/gorder-v1/common"
+	"github.com/FacundoChan/gorder-v1/common/handler/errors"
 	"github.com/FacundoChan/gorder-v1/order/app"
 	"github.com/FacundoChan/gorder-v1/order/app/command"
 	"github.com/FacundoChan/gorder-v1/order/app/dto"
@@ -31,9 +32,11 @@ func (H HTTPServer) PostCustomerCustomerIdOrders(c *gin.Context, customerID stri
 		H.Response(c, err, response)
 	}()
 	if err = c.ShouldBindJSON(&request); err != nil {
+		err = errors.NewWithError(consts.ErrnoBindRequestError, err)
 		return
 	}
 	if err = H.validate(request); err != nil {
+		err = errors.NewWithError(consts.ErrnoRequestValidateError, err)
 		return
 	}
 
@@ -80,7 +83,7 @@ func (H HTTPServer) GetCustomerCustomerIdOrdersOrderId(c *gin.Context, customerI
 func (H HTTPServer) validate(request client.CreateOrderRequest) error {
 	for _, v := range request.Items {
 		if v.Quantity <= 0 {
-			return errors.New("quantity must be positive")
+			return fmt.Errorf("quantity must be positive, got %d from %s", v.Quantity, v.Id)
 		}
 	}
 	return nil

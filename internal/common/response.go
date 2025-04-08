@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/FacundoChan/gorder-v1/common/handler/errors"
 	"github.com/FacundoChan/gorder-v1/common/tracing"
 	"github.com/gin-gonic/gin"
 )
@@ -27,9 +28,10 @@ func (base *BaseResponse) Response(ctx *gin.Context, err error, data any) {
 }
 
 func (base *BaseResponse) success(ctx *gin.Context, data any) {
+	errno, errmsg := errors.Output(nil)
 	r := response{
-		ErrorNo: 0,
-		Message: "success",
+		ErrorNo: errno,
+		Message: errmsg,
 		Data:    data,
 		TraceID: tracing.TraceID(ctx.Request.Context()),
 	}
@@ -40,9 +42,10 @@ func (base *BaseResponse) success(ctx *gin.Context, data any) {
 }
 
 func (base *BaseResponse) error(ctx *gin.Context, err error) {
+	errno, errmsg := errors.Output(err)
 	r := response{
-		ErrorNo: 2,
-		Message: err.Error(),
+		ErrorNo: errno,
+		Message: errmsg,
 		Data:    nil,
 		TraceID: tracing.TraceID(ctx.Request.Context()),
 	}

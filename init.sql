@@ -7,10 +7,11 @@ DROP TABLE IF EXISTS `order_stock`;
 CREATE TABLE `order_stock` (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   product_id VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
   quantity INT UNSIGNED NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO order_stock(product_id, quantity)
-VALUES ('prod_S3CrGrzAS1MZsK', 10), ('prod_S3Cr3l2WHdiL53', 100);
+INSERT INTO order_stock(product_id, name, quantity)
+VALUES ('prod_S3CrGrzAS1MZsK','Item #1', 10), ('prod_S3Cr3l2WHdiL53', 'Item #2', 100);

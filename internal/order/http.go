@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 
 	client "github.com/FacundoChan/gorder-v1/common/client/order"
 	"github.com/FacundoChan/gorder-v1/common/consts"
@@ -78,6 +79,36 @@ func (H HTTPServer) GetCustomerCustomerIdOrdersOrderId(c *gin.Context, customerI
 	}
 
 	response.Order = convertor.NewOrderConvertor().EntityToClient(o)
+}
+
+func (H HTTPServer) GetProducts(c *gin.Context) {
+	var (
+		err            error
+		productsResult *query.GetProductsResult
+		products       []dto.ProductDTO
+		response       dto.GetProductsResponse
+	)
+
+	defer func() {
+		H.Response(c, err, response)
+	}()
+
+	productsResult, err = H.app.Queries.GetProducts.Handle(c.Request.Context(), query.GetProducts{})
+	logrus.Debug("productsResult", productsResult)
+
+	if err != nil {
+		return
+	}
+
+	for _, item := range productsResult.Items {
+		products = append(products, dto.ProductDTO{
+			ID:       item.ID,
+			Name:     item.Name,
+			Quantity: item.Quantity,
+		})
+	}
+
+	response.Products = products
 }
 
 func (H HTTPServer) validate(request client.CreateOrderRequest) error {

@@ -19,6 +19,9 @@ type ServerInterface interface {
 
 	// (GET /customer/{customer_id}/orders/{order_id})
 	GetCustomerCustomerIdOrdersOrderId(c *gin.Context, customerId string, orderId string)
+
+	// (GET /products)
+	GetProducts(c *gin.Context)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -87,6 +90,19 @@ func (siw *ServerInterfaceWrapper) GetCustomerCustomerIdOrdersOrderId(c *gin.Con
 	siw.Handler.GetCustomerCustomerIdOrdersOrderId(c, customerId, orderId)
 }
 
+// GetProducts operation middleware
+func (siw *ServerInterfaceWrapper) GetProducts(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetProducts(c)
+}
+
 // GinServerOptions provides options for the Gin server.
 type GinServerOptions struct {
 	BaseURL      string
@@ -116,4 +132,5 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 
 	router.POST(options.BaseURL+"/customer/:customer_id/orders", wrapper.PostCustomerCustomerIdOrders)
 	router.GET(options.BaseURL+"/customer/:customer_id/orders/:order_id", wrapper.GetCustomerCustomerIdOrdersOrderId)
+	router.GET(options.BaseURL+"/products", wrapper.GetProducts)
 }

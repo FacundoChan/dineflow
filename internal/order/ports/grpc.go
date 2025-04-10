@@ -23,6 +23,7 @@ func NewGRPCServer(app app.Application) *GRPCServer {
 	return &GRPCServer{app: app}
 }
 
+/* Commands */
 func (G GRPCServer) CreateOrder(ctx context.Context, request *orderpb.CreateOrderRequest) (*emptypb.Empty, error) {
 	_, err := G.app.Commands.CreateOrder.Handle(ctx, command.CreateOrder{
 		CustomerID: request.CustomerID,
@@ -32,17 +33,6 @@ func (G GRPCServer) CreateOrder(ctx context.Context, request *orderpb.CreateOrde
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &emptypb.Empty{}, nil
-}
-
-func (G GRPCServer) GetOrder(ctx context.Context, request *orderpb.GetOrderRequest) (*orderpb.Order, error) {
-	order, err := G.app.Queries.GetCustomerOrder.Handle(ctx, query.GetCustomerOrder{
-		CustomerID: request.CustomerID,
-		OrderID:    request.OrderID,
-	})
-	if err != nil {
-		return nil, status.Error(codes.NotFound, err.Error())
-	}
-	return convertor.NewOrderConvertor().EntityToProto(order), nil
 }
 
 func (G GRPCServer) UpdateOrder(ctx context.Context, request *orderpb.Order) (_ *emptypb.Empty, err error) {
@@ -65,4 +55,16 @@ func (G GRPCServer) UpdateOrder(ctx context.Context, request *orderpb.Order) (_ 
 		},
 	})
 	return nil, err
+}
+
+/* Queries */
+func (G GRPCServer) GetOrder(ctx context.Context, request *orderpb.GetOrderRequest) (*orderpb.Order, error) {
+	order, err := G.app.Queries.GetCustomerOrder.Handle(ctx, query.GetCustomerOrder{
+		CustomerID: request.CustomerID,
+		OrderID:    request.OrderID,
+	})
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	return convertor.NewOrderConvertor().EntityToProto(order), nil
 }

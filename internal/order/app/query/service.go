@@ -12,4 +12,6 @@ type StockService interface {
 	GetItems(ctx context.Context, itemsID []string) ([]*orderpb.Item, error)
 	// rpc CheckIfItemsInStock(CheckIfItemsInStockRequest) returns (CheckIfItemsInStockResponse);
 	CheckIfItemsInStock(ctx context.Context, items []*orderpb.ItemWithQuantity) (*stockpb.CheckIfItemsInStockResponse, error)
+  // rpc GetAllItems(GetAllItemsRequest) returns (GetAllItemsResponse);
+	GetAllItems(ctx context.Context) (*stockpb.GetAllItemsResponse, error)
 }

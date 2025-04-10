@@ -64,3 +64,27 @@ func (G GRPCServer) CheckIfItemsInStock(ctx context.Context, request *stockpb.Ch
 		Items:   convertor.NewItemConvertor().EntitiesToProtos(items),
 	}, nil
 }
+
+func (G GRPCServer) GetAllItems(ctx context.Context, request *stockpb.GetAllItemsRequest) (*stockpb.GetAllItemsResponse, error) {
+	var (
+		err error
+	)
+
+	_, span := tracing.Start(ctx, "GetAllItems")
+	defer span.End()
+
+	logrus.Info("rpc_request_in, stock.GetAllItems")
+	defer func() {
+		logrus.Info("rpc_request_out, stock.GetAllItems")
+	}()
+
+	allItems, err := G.app.Queries.GetAllItems.Handle(ctx, query.GetAllItems{})
+	if err != nil {
+		logrus.WithError(err).Error("rpc_request_err")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &stockpb.GetAllItemsResponse{
+		Items: convertor.NewItemConvertor().EntitiesToProtos(allItems),
+	}, nil
+}

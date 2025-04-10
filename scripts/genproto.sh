@@ -14,6 +14,8 @@ source ./scripts/lib.sh
 
 API_ROOT="./api"
 
+export PATH="$HOME/go/bin:$PATH"
+
 # directories containing protos to be built
 function dirs {
   dirs=()

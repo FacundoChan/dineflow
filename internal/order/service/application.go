@@ -57,6 +57,7 @@ func newApplication(_ context.Context, stockGRPC query.StockService, ch *amqp.Ch
 		},
 		Queries: app.Queries{
 			GetCustomerOrder: query.NewGetCustomerOrderHandler(orderRepo, logger, metricsClient),
+			GetProducts:      query.NewGetProductsHandler(stockGRPC, logger, metricsClient),
 		},
 	}
 }

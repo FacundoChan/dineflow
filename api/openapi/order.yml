@@ -72,6 +72,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /products:
+    get:
+      description: "Get all products information"
+      responses:
+        "200":
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+        default:
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     Order:
@@ -146,6 +164,45 @@ components:
           type: integer
           format: int32
           minimum: 1
+
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - quantity
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+
+    ProductListResponse:
+      type: object
+      required:
+        - errorno
+        - message
+        - data
+        - trace_id
+      properties:
+        errorno:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          required:
+            - products
+          properties:
+            products:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product"
+        trace_id:
+          type: string
 
     Response:
       type: object

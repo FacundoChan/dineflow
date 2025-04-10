@@ -40,6 +40,27 @@ func (m MySQLStockRepository) GetItems(ctx context.Context, ids []string) ([]*en
 	return result, nil
 }
 
+func (m MySQLStockRepository) GetAllItems(ctx context.Context) ([]*entity.Item, error) {
+	var (
+		result []*entity.Item
+	)
+
+	data, err := m.db.GetAllStockItems(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, d := range data {
+		result = append(result, &entity.Item{
+			ID:       d.ProductID,
+			Name:     d.Name,
+			Quantity: int32(d.Quantity),
+		})
+	}
+
+	return result, nil
+}
+
 func (m MySQLStockRepository) GetStock(ctx context.Context, ids []string) ([]*entity.ItemWithQuantity, error) {
 	data, err := m.db.BatchGetStockByProductIDs(ctx, ids)
 	if err != nil {

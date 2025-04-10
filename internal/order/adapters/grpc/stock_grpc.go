@@ -35,3 +35,14 @@ func (s StockGRPC) CheckIfItemsInStock(ctx context.Context, items []*orderpb.Ite
 	logrus.Info("gRPC CheckIfItemsInStock response:", response)
 	return response, err
 }
+
+func (s StockGRPC) GetAllItems(ctx context.Context) (*stockpb.GetAllItemsResponse, error) {
+	logrus.Debugf("gRPC GetAllItems")
+	response, err := s.client.GetAllItems(ctx, &stockpb.GetAllItemsRequest{})
+	if err != nil {
+		logrus.Error(err.Error())
+		return nil, err
+	}
+	logrus.Info("gRPC GetAllItems response:", response)
+	return response, err
+}

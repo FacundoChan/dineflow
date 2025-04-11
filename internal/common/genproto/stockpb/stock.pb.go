@@ -206,26 +206,26 @@ func (x *CheckIfItemsInStockResponse) GetItems() []*orderpb.Item {
 	return nil
 }
 
-type GetAllItemsRequest struct {
+type GetAllProductsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAllItemsRequest) Reset() {
-	*x = GetAllItemsRequest{}
+func (x *GetAllProductsRequest) Reset() {
+	*x = GetAllProductsRequest{}
 	mi := &file_stockpb_stock_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAllItemsRequest) String() string {
+func (x *GetAllProductsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAllItemsRequest) ProtoMessage() {}
+func (*GetAllProductsRequest) ProtoMessage() {}
 
-func (x *GetAllItemsRequest) ProtoReflect() protoreflect.Message {
+func (x *GetAllProductsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_stockpb_stock_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -237,32 +237,32 @@ func (x *GetAllItemsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAllItemsRequest.ProtoReflect.Descriptor instead.
-func (*GetAllItemsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetAllProductsRequest.ProtoReflect.Descriptor instead.
+func (*GetAllProductsRequest) Descriptor() ([]byte, []int) {
 	return file_stockpb_stock_proto_rawDescGZIP(), []int{4}
 }
 
-type GetAllItemsResponse struct {
+type GetAllProductsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*orderpb.Item        `protobuf:"bytes,1,rep,name=Items,proto3" json:"Items,omitempty"`
+	Products      []*orderpb.Product     `protobuf:"bytes,1,rep,name=Products,proto3" json:"Products,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAllItemsResponse) Reset() {
-	*x = GetAllItemsResponse{}
+func (x *GetAllProductsResponse) Reset() {
+	*x = GetAllProductsResponse{}
 	mi := &file_stockpb_stock_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAllItemsResponse) String() string {
+func (x *GetAllProductsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAllItemsResponse) ProtoMessage() {}
+func (*GetAllProductsResponse) ProtoMessage() {}
 
-func (x *GetAllItemsResponse) ProtoReflect() protoreflect.Message {
+func (x *GetAllProductsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_stockpb_stock_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -274,14 +274,14 @@ func (x *GetAllItemsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAllItemsResponse.ProtoReflect.Descriptor instead.
-func (*GetAllItemsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetAllProductsResponse.ProtoReflect.Descriptor instead.
+func (*GetAllProductsResponse) Descriptor() ([]byte, []int) {
 	return file_stockpb_stock_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetAllItemsResponse) GetItems() []*orderpb.Item {
+func (x *GetAllProductsResponse) GetProducts() []*orderpb.Product {
 	if x != nil {
-		return x.Items
+		return x.Products
 	}
 	return nil
 }
@@ -299,14 +299,14 @@ const file_stockpb_stock_proto_rawDesc = "" +
 	"\x05Items\x18\x01 \x03(\v2\x19.orderpb.ItemWithQuantityR\x05Items\"\\\n" +
 	"\x1bCheckIfItemsInStockResponse\x12\x18\n" +
 	"\aInStock\x18\x01 \x01(\x05R\aInStock\x12#\n" +
-	"\x05Items\x18\x02 \x03(\v2\r.orderpb.ItemR\x05Items\"\x14\n" +
-	"\x12GetAllItemsRequest\":\n" +
-	"\x13GetAllItemsResponse\x12#\n" +
-	"\x05Items\x18\x01 \x03(\v2\r.orderpb.ItemR\x05Items2\xfb\x01\n" +
+	"\x05Items\x18\x02 \x03(\v2\r.orderpb.ItemR\x05Items\"\x17\n" +
+	"\x15GetAllProductsRequest\"F\n" +
+	"\x16GetAllProductsResponse\x12,\n" +
+	"\bProducts\x18\x01 \x03(\v2\x10.orderpb.ProductR\bProducts2\x84\x02\n" +
 	"\fStockService\x12?\n" +
 	"\bGetItems\x12\x18.stockpb.GetItemsRequest\x1a\x19.stockpb.GetItemsResponse\x12`\n" +
-	"\x13CheckIfItemsInStock\x12#.stockpb.CheckIfItemsInStockRequest\x1a$.stockpb.CheckIfItemsInStockResponse\x12H\n" +
-	"\vGetAllItems\x12\x1b.stockpb.GetAllItemsRequest\x1a\x1c.stockpb.GetAllItemsResponseB:Z8github.com/FacundoChan/gorder-v1/common/genproto/stockpbb\x06proto3"
+	"\x13CheckIfItemsInStock\x12#.stockpb.CheckIfItemsInStockRequest\x1a$.stockpb.CheckIfItemsInStockResponse\x12Q\n" +
+	"\x0eGetAllProducts\x12\x1e.stockpb.GetAllProductsRequest\x1a\x1f.stockpb.GetAllProductsResponseB:Z8github.com/FacundoChan/gorder-v1/common/genproto/stockpbb\x06proto3"
 
 var (
 	file_stockpb_stock_proto_rawDescOnce sync.Once
@@ -326,22 +326,23 @@ var file_stockpb_stock_proto_goTypes = []any{
 	(*GetItemsResponse)(nil),            // 1: stockpb.GetItemsResponse
 	(*CheckIfItemsInStockRequest)(nil),  // 2: stockpb.CheckIfItemsInStockRequest
 	(*CheckIfItemsInStockResponse)(nil), // 3: stockpb.CheckIfItemsInStockResponse
-	(*GetAllItemsRequest)(nil),          // 4: stockpb.GetAllItemsRequest
-	(*GetAllItemsResponse)(nil),         // 5: stockpb.GetAllItemsResponse
+	(*GetAllProductsRequest)(nil),       // 4: stockpb.GetAllProductsRequest
+	(*GetAllProductsResponse)(nil),      // 5: stockpb.GetAllProductsResponse
 	(*orderpb.Item)(nil),                // 6: orderpb.Item
 	(*orderpb.ItemWithQuantity)(nil),    // 7: orderpb.ItemWithQuantity
+	(*orderpb.Product)(nil),             // 8: orderpb.Product
 }
 var file_stockpb_stock_proto_depIdxs = []int32{
 	6, // 0: stockpb.GetItemsResponse.Items:type_name -> orderpb.Item
 	7, // 1: stockpb.CheckIfItemsInStockRequest.Items:type_name -> orderpb.ItemWithQuantity
 	6, // 2: stockpb.CheckIfItemsInStockResponse.Items:type_name -> orderpb.Item
-	6, // 3: stockpb.GetAllItemsResponse.Items:type_name -> orderpb.Item
+	8, // 3: stockpb.GetAllProductsResponse.Products:type_name -> orderpb.Product
 	0, // 4: stockpb.StockService.GetItems:input_type -> stockpb.GetItemsRequest
 	2, // 5: stockpb.StockService.CheckIfItemsInStock:input_type -> stockpb.CheckIfItemsInStockRequest
-	4, // 6: stockpb.StockService.GetAllItems:input_type -> stockpb.GetAllItemsRequest
+	4, // 6: stockpb.StockService.GetAllProducts:input_type -> stockpb.GetAllProductsRequest
 	1, // 7: stockpb.StockService.GetItems:output_type -> stockpb.GetItemsResponse
 	3, // 8: stockpb.StockService.CheckIfItemsInStock:output_type -> stockpb.CheckIfItemsInStockResponse
-	5, // 9: stockpb.StockService.GetAllItems:output_type -> stockpb.GetAllItemsResponse
+	5, // 9: stockpb.StockService.GetAllProducts:output_type -> stockpb.GetAllProductsResponse
 	7, // [7:10] is the sub-list for method output_type
 	4, // [4:7] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

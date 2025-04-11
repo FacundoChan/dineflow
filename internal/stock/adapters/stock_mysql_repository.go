@@ -40,12 +40,12 @@ func (m MySQLStockRepository) GetItems(ctx context.Context, ids []string) ([]*en
 	return result, nil
 }
 
-func (m MySQLStockRepository) GetAllItems(ctx context.Context) ([]*entity.Item, error) {
+func (m MySQLStockRepository) GetAllProducts(ctx context.Context) ([]*entity.Product, error) {
 	var (
-		result []*entity.Item
+		result []*entity.Product
 	)
 
-	data, err := m.db.GetAllStockItems(ctx)
+	data, err := m.db.GetAllStockProducts(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +55,12 @@ func (m MySQLStockRepository) GetAllItems(ctx context.Context) ([]*entity.Item, 
 	}).Debug("[data]")
 
 	for _, d := range data {
-		result = append(result, &entity.Item{
+		result = append(result, &entity.Product{
 			ID:       d.ProductID,
 			Name:     d.Name,
 			Quantity: int32(d.Quantity),
 			Price:    d.Price,
+			ImgUrls:  d.ImgUrls,
 		})
 	}
 

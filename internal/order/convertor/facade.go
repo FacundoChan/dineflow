@@ -17,6 +17,11 @@ var (
 	itemWithQuantityOnce      sync.Once
 )
 
+var (
+	productConvertor *ProductConvertor
+	productOnce      sync.Once
+)
+
 func NewOrderConvertor() *OrderConvertor {
 	orderOnce.Do(func() {
 		orderConvertor = new(OrderConvertor)
@@ -36,4 +41,11 @@ func NewItemWithQuantityConvertor() *ItemWithQuantityConvertor {
 		itemWithQuantityConvertor = new(ItemWithQuantityConvertor)
 	})
 	return itemWithQuantityConvertor
+}
+
+func NewProductConvertor() *ProductConvertor {
+	productOnce.Do(func() {
+		productConvertor = new(ProductConvertor)
+	})
+	return productConvertor
 }

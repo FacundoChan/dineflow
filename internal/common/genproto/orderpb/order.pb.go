@@ -80,7 +80,6 @@ type Item struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
 	Quantity      int32                  `protobuf:"varint,3,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
 	PriceID       string                 `protobuf:"bytes,4,opt,name=PriceID,proto3" json:"PriceID,omitempty"`
-	Price         float32                `protobuf:"fixed32,5,opt,name=Price,proto3" json:"Price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -141,13 +140,6 @@ func (x *Item) GetPriceID() string {
 		return x.PriceID
 	}
 	return ""
-}
-
-func (x *Item) GetPrice() float32 {
-	if x != nil {
-		return x.Price
-	}
-	return 0
 }
 
 type ItemWithQuantity struct {
@@ -330,6 +322,90 @@ func (x *GetOrderRequest) GetCustomerID() string {
 	return ""
 }
 
+type Product struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ID            string                 `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Quantity      int32                  `protobuf:"varint,3,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
+	PriceID       string                 `protobuf:"bytes,4,opt,name=PriceID,proto3" json:"PriceID,omitempty"`
+	Price         float32                `protobuf:"fixed32,5,opt,name=Price,proto3" json:"Price,omitempty"`
+	ImgUrls       []string               `protobuf:"bytes,6,rep,name=ImgUrls,proto3" json:"ImgUrls,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Product) Reset() {
+	*x = Product{}
+	mi := &file_orderpb_order_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Product) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Product) ProtoMessage() {}
+
+func (x *Product) ProtoReflect() protoreflect.Message {
+	mi := &file_orderpb_order_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Product.ProtoReflect.Descriptor instead.
+func (*Product) Descriptor() ([]byte, []int) {
+	return file_orderpb_order_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *Product) GetID() string {
+	if x != nil {
+		return x.ID
+	}
+	return ""
+}
+
+func (x *Product) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Product) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+func (x *Product) GetPriceID() string {
+	if x != nil {
+		return x.PriceID
+	}
+	return ""
+}
+
+func (x *Product) GetPrice() float32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *Product) GetImgUrls() []string {
+	if x != nil {
+		return x.ImgUrls
+	}
+	return nil
+}
+
 var File_orderpb_order_proto protoreflect.FileDescriptor
 
 const file_orderpb_order_proto_rawDesc = "" +
@@ -339,13 +415,12 @@ const file_orderpb_order_proto_rawDesc = "" +
 	"\n" +
 	"CustomerID\x18\x01 \x01(\tR\n" +
 	"CustomerID\x12/\n" +
-	"\x05Items\x18\x02 \x03(\v2\x19.orderpb.ItemWithQuantityR\x05Items\"v\n" +
+	"\x05Items\x18\x02 \x03(\v2\x19.orderpb.ItemWithQuantityR\x05Items\"`\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x12\n" +
 	"\x04Name\x18\x02 \x01(\tR\x04Name\x12\x1a\n" +
 	"\bQuantity\x18\x03 \x01(\x05R\bQuantity\x12\x18\n" +
-	"\aPriceID\x18\x04 \x01(\tR\aPriceID\x12\x14\n" +
-	"\x05Price\x18\x05 \x01(\x02R\x05Price\">\n" +
+	"\aPriceID\x18\x04 \x01(\tR\aPriceID\">\n" +
 	"\x10ItemWithQuantity\x12\x0e\n" +
 	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x1a\n" +
 	"\bQuantity\x18\x02 \x01(\x05R\bQuantity\"\x96\x01\n" +
@@ -361,7 +436,14 @@ const file_orderpb_order_proto_rawDesc = "" +
 	"\aOrderID\x18\x01 \x01(\tR\aOrderID\x12\x1e\n" +
 	"\n" +
 	"CustomerID\x18\x02 \x01(\tR\n" +
-	"CustomerID2\xbf\x01\n" +
+	"CustomerID\"\x93\x01\n" +
+	"\aProduct\x12\x0e\n" +
+	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x12\n" +
+	"\x04Name\x18\x02 \x01(\tR\x04Name\x12\x1a\n" +
+	"\bQuantity\x18\x03 \x01(\x05R\bQuantity\x12\x18\n" +
+	"\aPriceID\x18\x04 \x01(\tR\aPriceID\x12\x14\n" +
+	"\x05Price\x18\x05 \x01(\x02R\x05Price\x12\x18\n" +
+	"\aImgUrls\x18\x06 \x03(\tR\aImgUrls2\xbf\x01\n" +
 	"\fOrderService\x12B\n" +
 	"\vCreateOrder\x12\x1b.orderpb.CreateOrderRequest\x1a\x16.google.protobuf.Empty\x124\n" +
 	"\bGetOrder\x12\x18.orderpb.GetOrderRequest\x1a\x0e.orderpb.Order\x125\n" +
@@ -379,14 +461,15 @@ func file_orderpb_order_proto_rawDescGZIP() []byte {
 	return file_orderpb_order_proto_rawDescData
 }
 
-var file_orderpb_order_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_orderpb_order_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_orderpb_order_proto_goTypes = []any{
 	(*CreateOrderRequest)(nil), // 0: orderpb.CreateOrderRequest
 	(*Item)(nil),               // 1: orderpb.Item
 	(*ItemWithQuantity)(nil),   // 2: orderpb.ItemWithQuantity
 	(*Order)(nil),              // 3: orderpb.Order
 	(*GetOrderRequest)(nil),    // 4: orderpb.GetOrderRequest
-	(*emptypb.Empty)(nil),      // 5: google.protobuf.Empty
+	(*Product)(nil),            // 5: orderpb.Product
+	(*emptypb.Empty)(nil),      // 6: google.protobuf.Empty
 }
 var file_orderpb_order_proto_depIdxs = []int32{
 	2, // 0: orderpb.CreateOrderRequest.Items:type_name -> orderpb.ItemWithQuantity
@@ -394,9 +477,9 @@ var file_orderpb_order_proto_depIdxs = []int32{
 	0, // 2: orderpb.OrderService.CreateOrder:input_type -> orderpb.CreateOrderRequest
 	4, // 3: orderpb.OrderService.GetOrder:input_type -> orderpb.GetOrderRequest
 	3, // 4: orderpb.OrderService.UpdateOrder:input_type -> orderpb.Order
-	5, // 5: orderpb.OrderService.CreateOrder:output_type -> google.protobuf.Empty
+	6, // 5: orderpb.OrderService.CreateOrder:output_type -> google.protobuf.Empty
 	3, // 6: orderpb.OrderService.GetOrder:output_type -> orderpb.Order
-	5, // 7: orderpb.OrderService.UpdateOrder:output_type -> google.protobuf.Empty
+	6, // 7: orderpb.OrderService.UpdateOrder:output_type -> google.protobuf.Empty
 	5, // [5:8] is the sub-list for method output_type
 	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -415,7 +498,7 @@ func file_orderpb_order_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_orderpb_order_proto_rawDesc), len(file_orderpb_order_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

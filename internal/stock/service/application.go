@@ -25,7 +25,7 @@ func NewApplication(ctx context.Context) app.Application {
 		Queries: app.Queries{
 			CheckIfItemsInStock: query.NewCheckIfItemsInStockHandler(stockRepo, stripAPI, logger, metricsClient),
 			GetItems:            query.NewGetItemsHandler(stockRepo, logger, metricsClient),
-			GetAllItems:         query.NewGetAllItemsHandler(stockRepo, logger, metricsClient),
+			GetAllProducts:      query.NewGetAllProductsHandler(stockRepo, logger, metricsClient),
 		},
 	}
 }

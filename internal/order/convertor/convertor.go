@@ -94,7 +94,6 @@ func (c *ItemConvertor) EntityToProto(item *entity.Item) *orderpb.Item {
 		Name:     item.Name,
 		Quantity: item.Quantity,
 		PriceID:  item.PriceID,
-		Price:    item.Price,
 	}
 }
 
@@ -104,7 +103,6 @@ func (c *ItemConvertor) ProtoToEntity(item *orderpb.Item) *entity.Item {
 		Name:     item.Name,
 		Quantity: item.Quantity,
 		PriceID:  item.PriceID,
-		Price:    item.Price,
 	}
 }
 

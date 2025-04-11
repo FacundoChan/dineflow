@@ -5,6 +5,7 @@ import (
 
 	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
 	"github.com/FacundoChan/gorder-v1/common/tracing"
+	"github.com/FacundoChan/gorder-v1/common/utils"
 	"github.com/FacundoChan/gorder-v1/stock/app"
 	"github.com/FacundoChan/gorder-v1/stock/app/query"
 	"github.com/FacundoChan/gorder-v1/stock/convertor"
@@ -65,26 +66,29 @@ func (G GRPCServer) CheckIfItemsInStock(ctx context.Context, request *stockpb.Ch
 	}, nil
 }
 
-func (G GRPCServer) GetAllItems(ctx context.Context, request *stockpb.GetAllItemsRequest) (*stockpb.GetAllItemsResponse, error) {
+func (G GRPCServer) GetAllProducts(ctx context.Context, request *stockpb.GetAllProductsRequest) (*stockpb.GetAllProductsResponse, error) {
 	var (
 		err error
 	)
 
-	_, span := tracing.Start(ctx, "GetAllItems")
+	_, span := tracing.Start(ctx, "GetAllProducts")
 	defer span.End()
 
-	logrus.Info("rpc_request_in, stock.GetAllItems")
+	logrus.Info("rpc_request_in, stock.GetAllProducts")
 	defer func() {
-		logrus.Info("rpc_request_out, stock.GetAllItems")
+		logrus.Info("rpc_request_out, stock.GetAllProducts")
 	}()
 
-	allItems, err := G.app.Queries.GetAllItems.Handle(ctx, query.GetAllItems{})
+	allProducts, err := G.app.Queries.GetAllProducts.Handle(ctx, query.GetAllProducts{})
+	logrus.WithFields(logrus.Fields{
+		"products": utils.ToString(allProducts),
+	}).Debug("[grpc.GetAllProducts]")
 	if err != nil {
 		logrus.WithError(err).Error("rpc_request_err")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &stockpb.GetAllItemsResponse{
-		Items: convertor.NewItemConvertor().EntitiesToProtos(allItems),
+	return &stockpb.GetAllProductsResponse{
+		Products: convertor.NewProductConvertor().EntitiesToProtos(allProducts),
 	}, nil
 }

@@ -39,10 +39,11 @@ type Order struct {
 
 // Product defines model for Product.
 type Product struct {
-	Id       string  `json:"id"`
-	Name     string  `json:"name"`
-	Price    float32 `json:"price"`
-	Quantity int32   `json:"quantity"`
+	Id       string    `json:"id"`
+	ImgUrls  *[]string `json:"img_urls,omitempty"`
+	Name     string    `json:"name"`
+	Price    float32   `json:"price"`
+	Quantity int32     `json:"quantity"`
 }
 
 // ProductListResponse defines model for ProductListResponse.

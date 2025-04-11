@@ -32,13 +32,15 @@ func NewMySQL() *MySQL {
 }
 
 type StockModel struct {
-	ID        int64     `json:"column:id"`
-	ProductID string    `json:"column:product_id"`
-	Name      string    `json:"column:name"`
-	Quantity  int64     `json:"column:quantity"`
-	Price     float32   `json:"column:price"`
-	CreatedAt time.Time `json:"column:created_at"`
-	UpdatedAt time.Time `json:"column:updated_at"`
+	ID          int64     `gorm:"column:id"`
+	ProductID   string    `gorm:"column:product_id"`
+	Name        string    `gorm:"column:name"`
+	Quantity    int64     `gorm:"column:quantity"`
+	Price       float32   `gorm:"column:price"`
+	Description string    `gorm:"column:description"`
+	ImgUrls     []string  `gorm:"-"`
+	CreatedAt   time.Time `gorm:"column:created_at"`
+	UpdatedAt   time.Time `gorm:"column:updated_at"`
 }
 
 func (m StockModel) TableName() string {
@@ -74,13 +76,22 @@ func (d MySQL) GetStocksByPage(ctx context.Context, offset int, limit int) ([]St
 	return result, nil
 }
 
-func (d MySQL) GetAllStockItems(ctx context.Context) ([]StockModel, error) {
+func (d MySQL) GetAllStockProducts(ctx context.Context) ([]StockModel, error) {
 	var result []StockModel
 
-	tx := d.db.WithContext(ctx).Limit(10).Find(&result)
-
-	if tx.Error != nil {
-		return nil, tx.Error
+	if err := d.db.WithContext(ctx).Limit(10).Find(&result).Error; err != nil {
+		return nil, err
 	}
+
+	for i := range result {
+		product := &result[i]
+		var productImgsUrls []string
+		if err := d.db.WithContext(ctx).Table("product_images").Where("product_id = ?", product.ProductID).Pluck("img_url", &productImgsUrls).Error; err != nil {
+			return nil, err
+		}
+
+		product.ImgUrls = productImgsUrls
+	}
+
 	return result, nil
 }

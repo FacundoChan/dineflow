@@ -100,12 +100,13 @@ func (H HTTPServer) GetProducts(c *gin.Context) {
 		return
 	}
 
-	for _, item := range productsResult.Items {
+	for _, item := range productsResult.Products {
 		products = append(products, dto.ProductDTO{
 			ID:       item.ID,
 			Name:     item.Name,
 			Quantity: item.Quantity,
 			Price:    item.Price,
+			ImgUrls:  item.ImgUrls,
 		})
 	}
 

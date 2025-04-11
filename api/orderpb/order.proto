@@ -22,7 +22,6 @@ message Item {
   string Name = 2;
   int32 Quantity = 3;
   string PriceID = 4;
-  float Price = 5;
 }
 
 message ItemWithQuantity {
@@ -41,4 +40,13 @@ message Order {
 message GetOrderRequest {
   string OrderID = 1;
   string CustomerID = 2;
+}
+
+message Product {
+  string ID = 1;
+  string Name = 2;
+  int32 Quantity = 3;
+  string PriceID = 4;
+  float Price = 5;
+  repeated string ImgUrls = 6;
 }

@@ -10,10 +10,10 @@ import (
 
 type Repository interface {
 	GetItems(ctx context.Context, ids []string) ([]*entity.Item, error)
-	GetAllItems(ctx context.Context) ([]*entity.Item, error)
+	GetAllProducts(ctx context.Context) ([]*entity.Product, error)
 	GetStock(ctx context.Context, ids []string) ([]*entity.ItemWithQuantity, error)
 	UpdateStock(ctx context.Context, queryItems []*entity.ItemWithQuantity,
-		fc func(ctx context.Context, existing []*entity.ItemWithQuantity, query []*entity.ItemWithQuantity) ([]*entity.ItemWithQuantity, error)) (error)
+		fc func(ctx context.Context, existing []*entity.ItemWithQuantity, query []*entity.ItemWithQuantity) ([]*entity.ItemWithQuantity, error)) error
 }
 
 type NotFoundError struct {

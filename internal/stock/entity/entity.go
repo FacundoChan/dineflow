@@ -20,3 +20,12 @@ type ItemWithQuantity struct {
 	ID       string
 	Quantity int32
 }
+
+type Product struct {
+	ID       string
+	Name     string
+	Quantity int32
+	PriceID  string
+	Price    float32
+	ImgUrls  []string
+}

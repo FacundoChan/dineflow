@@ -185,6 +185,13 @@ components:
           format: float
           example: 12.99
           multipleOf: 0.01
+        img_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+            example:
+              - "https://example.com/image.jpg"
 
     ProductListResponse:
       type: object

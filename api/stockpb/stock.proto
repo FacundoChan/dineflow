@@ -9,7 +9,7 @@ import "orderpb/order.proto";
 service StockService {
   rpc GetItems(GetItemsRequest) returns (GetItemsResponse);
   rpc CheckIfItemsInStock(CheckIfItemsInStockRequest) returns (CheckIfItemsInStockResponse);
-  rpc GetAllItems(GetAllItemsRequest) returns (GetAllItemsResponse);
+  rpc GetAllProducts(GetAllProductsRequest) returns (GetAllProductsResponse);
 }
 
 message GetItemsRequest {
@@ -29,8 +29,8 @@ message CheckIfItemsInStockResponse {
   repeated orderpb.Item Items = 2;
 }
 
-message GetAllItemsRequest {}
+message GetAllProductsRequest {}
 
-message GetAllItemsResponse {
-  repeated orderpb.Item Items = 1;
+message GetAllProductsResponse {
+  repeated orderpb.Product Products = 1;
 }

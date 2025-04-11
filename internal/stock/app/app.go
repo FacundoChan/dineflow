@@ -13,5 +13,5 @@ type Commands struct {
 type Queries struct {
 	CheckIfItemsInStock query.CheckIfItemsInStockHandler
 	GetItems            query.GetItemsHandler
-	GetAllItems         query.GetAllItemsHandler // temporary
+	GetAllProducts      query.GetAllProductsHandler // temporary
 }

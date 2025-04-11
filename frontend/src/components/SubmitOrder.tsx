@@ -1,6 +1,6 @@
 // src/components/SubmitOrder.tsx
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import apiClient from "@/services/api-client";
 
 interface SubmitOrderProps {
   items: { id: string; quantity: number }[];
@@ -23,10 +23,10 @@ const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
       try {
         console.log(
           "GET ",
-          `http://127.0.0.1:8282/api/customer/${customerID}/orders/${orderID}`,
+          `/api/customer/${customerID}/orders/${orderID}`,
         );
-        const response = await axios.get(
-          `http://127.0.0.1:8282/api/customer/${customerID}/orders/${orderID}`,
+        const response = await apiClient.get(
+          `/api/customer/${customerID}/orders/${orderID}`,
         );
 
         console.log(JSON.stringify(response.data));
@@ -65,13 +65,13 @@ const SubmitOrder: React.FC<SubmitOrderProps> = ({ items }) => {
 
     console.log(
       "POST address:",
-      `http://127.0.0.1:8282/api/customer/${customerID}/orders`,
+      `/api/customer/${customerID}/orders`,
     );
     console.log("提交订单", JSON.stringify(postData));
 
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8282/api/customer/${customerID}/orders`,
+      const response = await apiClient.post(
+        `/api/customer/${customerID}/orders`,
         postData,
       );
       console.log("Submit order successfully: ", response.data);

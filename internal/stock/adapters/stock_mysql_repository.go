@@ -50,11 +50,16 @@ func (m MySQLStockRepository) GetAllItems(ctx context.Context) ([]*entity.Item, 
 		return nil, err
 	}
 
+	logrus.WithFields(logrus.Fields{
+		"items": utils.ToString(data),
+	}).Debug("[data]")
+
 	for _, d := range data {
 		result = append(result, &entity.Item{
 			ID:       d.ProductID,
 			Name:     d.Name,
 			Quantity: int32(d.Quantity),
+			Price:    d.Price,
 		})
 	}
 

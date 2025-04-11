@@ -171,6 +171,7 @@ components:
         - id
         - name
         - quantity
+        - price
       properties:
         id:
           type: string
@@ -179,6 +180,11 @@ components:
         quantity:
           type: integer
           format: int32
+        price:
+          type: number
+          format: float
+          example: 12.99
+          multipleOf: 0.01
 
     ProductListResponse:
       type: object

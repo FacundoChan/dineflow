@@ -105,6 +105,7 @@ func (H HTTPServer) GetProducts(c *gin.Context) {
 			ID:       item.ID,
 			Name:     item.Name,
 			Quantity: item.Quantity,
+			Price:    item.Price,
 		})
 	}
 

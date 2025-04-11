@@ -5,6 +5,7 @@ type Item struct {
 	Name     string
 	Quantity int32
 	PriceID  string
+	Price    float32
 }
 
 type ItemWithQuantity struct {

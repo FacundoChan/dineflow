@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/FacundoChan/gorder-v1/common/decorator"
+	"github.com/FacundoChan/gorder-v1/common/utils"
 	"github.com/FacundoChan/gorder-v1/order/convertor"
 	"github.com/FacundoChan/gorder-v1/order/entity"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -47,5 +48,10 @@ func (g getProductsHandler) Handle(ctx context.Context, query GetProducts) (*Get
 		return nil, err
 	}
 	result := convertor.NewItemConvertor().ProtosToEntities(response.Items)
+
+	logrus.WithFields(logrus.Fields{
+		"result": utils.ToString(response.Items),
+	}).Debug("[getProductsHandler.Handle]")
+
 	return &GetProductsResult{Items: result}, nil
 }

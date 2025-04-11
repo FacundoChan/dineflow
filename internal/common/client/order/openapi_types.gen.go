@@ -39,17 +39,20 @@ type Order struct {
 
 // Product defines model for Product.
 type Product struct {
-	Name      string `json:"name"`
-	ProductId string `json:"product_id"`
-	Quantity  int32  `json:"quantity"`
+	Id       string  `json:"id"`
+	Name     string  `json:"name"`
+	Price    float32 `json:"price"`
+	Quantity int32   `json:"quantity"`
 }
 
 // ProductListResponse defines model for ProductListResponse.
 type ProductListResponse struct {
-	Data    []Product `json:"data"`
-	Errorno int       `json:"errorno"`
-	Message string    `json:"message"`
-	TraceId string    `json:"trace_id"`
+	Data struct {
+		Products []Product `json:"products"`
+	} `json:"data"`
+	Errorno int    `json:"errorno"`
+	Message string `json:"message"`
+	TraceId string `json:"trace_id"`
 }
 
 // Response defines model for Response.

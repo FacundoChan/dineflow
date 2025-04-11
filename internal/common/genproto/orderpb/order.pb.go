@@ -80,6 +80,7 @@ type Item struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
 	Quantity      int32                  `protobuf:"varint,3,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
 	PriceID       string                 `protobuf:"bytes,4,opt,name=PriceID,proto3" json:"PriceID,omitempty"`
+	Price         float32                `protobuf:"fixed32,5,opt,name=Price,proto3" json:"Price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -140,6 +141,13 @@ func (x *Item) GetPriceID() string {
 		return x.PriceID
 	}
 	return ""
+}
+
+func (x *Item) GetPrice() float32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
 }
 
 type ItemWithQuantity struct {
@@ -331,12 +339,13 @@ const file_orderpb_order_proto_rawDesc = "" +
 	"\n" +
 	"CustomerID\x18\x01 \x01(\tR\n" +
 	"CustomerID\x12/\n" +
-	"\x05Items\x18\x02 \x03(\v2\x19.orderpb.ItemWithQuantityR\x05Items\"`\n" +
+	"\x05Items\x18\x02 \x03(\v2\x19.orderpb.ItemWithQuantityR\x05Items\"v\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x12\n" +
 	"\x04Name\x18\x02 \x01(\tR\x04Name\x12\x1a\n" +
 	"\bQuantity\x18\x03 \x01(\x05R\bQuantity\x12\x18\n" +
-	"\aPriceID\x18\x04 \x01(\tR\aPriceID\">\n" +
+	"\aPriceID\x18\x04 \x01(\tR\aPriceID\x12\x14\n" +
+	"\x05Price\x18\x05 \x01(\x02R\x05Price\">\n" +
 	"\x10ItemWithQuantity\x12\x0e\n" +
 	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x1a\n" +
 	"\bQuantity\x18\x02 \x01(\x05R\bQuantity\"\x96\x01\n" +

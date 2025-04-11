@@ -36,6 +36,7 @@ type StockModel struct {
 	ProductID string    `json:"column:product_id"`
 	Name      string    `json:"column:name"`
 	Quantity  int64     `json:"column:quantity"`
+	Price     float32   `json:"column:price"`
 	CreatedAt time.Time `json:"column:created_at"`
 	UpdatedAt time.Time `json:"column:updated_at"`
 }

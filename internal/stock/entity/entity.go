@@ -29,3 +29,13 @@ type Product struct {
 	Price    float32
 	ImgUrls  []string
 }
+
+type StockModel struct {
+	ID          int64
+	ProductID   string
+	Name        string
+	Quantity    int64
+	Price       float32
+	Description string
+	ImgUrls     []string
+}

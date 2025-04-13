@@ -16,6 +16,13 @@ type Repository interface {
 		fc func(ctx context.Context, existing []*entity.ItemWithQuantity, query []*entity.ItemWithQuantity) ([]*entity.ItemWithQuantity, error)) error
 }
 
+type StockDB interface {
+	BatchGetStockByProductIDs(ctx context.Context, productIDs []string) ([]entity.StockModel, error)
+	GetAllStockProducts(ctx context.Context) ([]entity.StockModel, error)
+	UpdateStockTransaction(ctx context.Context, data []*entity.ItemWithQuantity,
+		updateFunc func(c context.Context, existing []*entity.ItemWithQuantity, query []*entity.ItemWithQuantity) ([]*entity.ItemWithQuantity, error)) error
+}
+
 type NotFoundError struct {
 	MissingIDs []string
 }

@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+
 	"github.com/FacundoChan/gorder-v1/common/decorator"
 	"github.com/FacundoChan/gorder-v1/common/utils"
 	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"

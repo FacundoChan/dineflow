@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/FacundoChan/gorder-v1/common/utils"
+	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
@@ -47,20 +50,60 @@ func (m StockModel) TableName() string {
 	return "order_stock"
 }
 
-func (d MySQL) StartTransaction(fc func(tx *gorm.DB) error) error {
+func (d *MySQL) StartTransaction(fc func(tx *gorm.DB) error) error {
 	return d.db.Transaction(fc)
 }
 
-func (d MySQL) BatchGetStockByProductIDs(ctx context.Context, productIDs []string) ([]StockModel, error) {
+func (d *MySQL) UpdateStockTransaction(ctx context.Context, data []*entity.ItemWithQuantity,
+	updateFunc func(c context.Context, existing []*entity.ItemWithQuantity, query []*entity.ItemWithQuantity) ([]*entity.ItemWithQuantity, error)) error {
+	return d.StartTransaction(func(tx *gorm.DB) (err error) {
+
+		defer func() {
+			if err != nil {
+				logrus.Warnf("update transaction error: %v", err)
+			}
+		}()
+
+		var dest []*StockModel
+		// HACK: table name should be variable
+		if err = tx.Table("order_stock").Where("product_id IN ?", getIDFromEntities(data)).Find(&dest).Error; err != nil {
+			return errors.Wrap(err, "failed to get product_id")
+		}
+		existing := d.unmarshalFromDatabase(dest)
+		logrus.WithFields(logrus.Fields{
+			"existing": utils.ToString(existing),
+		}).Debug("[existing]")
+
+		updated, err := updateFunc(ctx, existing, data)
+		if err != nil {
+			return err
+		}
+		logrus.WithFields(logrus.Fields{
+			"updated": utils.ToString(updated),
+		}).Debug("[updated]")
+
+		for _, updatedData := range updated {
+			// HACK: table name should be variable
+			if err = tx.Table("order_stock").Where("product_id = ?", updatedData.ID).Update("quantity", updatedData.Quantity).Error; err != nil {
+				return errors.Wrap(err, fmt.Sprintf("unable to update %v+", updatedData))
+			}
+		}
+
+		return nil
+	})
+
+}
+
+func (d *MySQL) BatchGetStockByProductIDs(ctx context.Context, productIDs []string) ([]entity.StockModel, error) {
 	var result []StockModel
 	tx := d.db.WithContext(ctx).Where("product_id IN ?", productIDs).Find(&result)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	return result, nil
+	return d.PersistentsToEntities(result), nil
 }
 
-func (d MySQL) GetStocksByPage(ctx context.Context, offset int, limit int) ([]StockModel, error) {
+func (d *MySQL) GetStocksByPage(ctx context.Context, offset int, limit int) ([]entity.StockModel, error) {
 	// For handler
 	// offset := (page - 1) * pageSize
 	// limit := pageSize
@@ -73,10 +116,10 @@ func (d MySQL) GetStocksByPage(ctx context.Context, offset int, limit int) ([]St
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	return result, nil
+	return d.PersistentsToEntities(result), nil
 }
 
-func (d MySQL) GetAllStockProducts(ctx context.Context) ([]StockModel, error) {
+func (d *MySQL) GetAllStockProducts(ctx context.Context) ([]entity.StockModel, error) {
 	var result []StockModel
 
 	if err := d.db.WithContext(ctx).Limit(10).Find(&result).Error; err != nil {
@@ -93,5 +136,44 @@ func (d MySQL) GetAllStockProducts(ctx context.Context) ([]StockModel, error) {
 		product.ImgUrls = productImgsUrls
 	}
 
-	return result, nil
+	return d.PersistentsToEntities(result), nil
+}
+
+func getIDFromEntities(data []*entity.ItemWithQuantity) []string {
+	var result []string
+	for _, d := range data {
+		result = append(result, d.ID)
+	}
+	return result
+}
+
+func (d *MySQL) unmarshalFromDatabase(dest []*StockModel) []*entity.ItemWithQuantity {
+	var result []*entity.ItemWithQuantity
+	for _, i := range dest {
+		result = append(result, &entity.ItemWithQuantity{
+			ID:       i.ProductID,
+			Quantity: int32(i.Quantity),
+		})
+	}
+	return result
+}
+
+func (d *MySQL) PersistentsToEntities(s []StockModel) []entity.StockModel {
+	var res []entity.StockModel
+	for _, p := range s {
+		res = append(res, d.PersistentToEntity(p))
+	}
+	return res
+}
+
+func (d *MySQL) PersistentToEntity(p StockModel) entity.StockModel {
+	return entity.StockModel{
+		ID:          p.ID,
+		ProductID:   p.ProductID,
+		Name:        p.Name,
+		Quantity:    p.Quantity,
+		Price:       p.Price,
+		Description: p.Description,
+		ImgUrls:     p.ImgUrls,
+	}
 }

@@ -15,10 +15,10 @@ import (
 type ServerInterface interface {
 
 	// (POST /customer/{customer_id}/orders)
-	PostCustomerCustomerIdOrders(c *gin.Context, customerId string)
+	PostCustomerCustomerIDOrders(c *gin.Context, customerId string)
 
 	// (GET /customer/{customer_id}/orders/{order_id})
-	GetCustomerCustomerIdOrdersOrderId(c *gin.Context, customerId string, orderId string)
+	GetCustomerCustomerIDOrdersOrderID(c *gin.Context, customerId string, orderId string)
 
 	// (GET /products)
 	GetProducts(c *gin.Context)
@@ -33,8 +33,8 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(c *gin.Context)
 
-// PostCustomerCustomerIdOrders operation middleware
-func (siw *ServerInterfaceWrapper) PostCustomerCustomerIdOrders(c *gin.Context) {
+// PostCustomerCustomerIDOrders operation middleware
+func (siw *ServerInterfaceWrapper) PostCustomerCustomerIDOrders(c *gin.Context) {
 
 	var err error
 
@@ -54,11 +54,11 @@ func (siw *ServerInterfaceWrapper) PostCustomerCustomerIdOrders(c *gin.Context) 
 		}
 	}
 
-	siw.Handler.PostCustomerCustomerIdOrders(c, customerId)
+	siw.Handler.PostCustomerCustomerIDOrders(c, customerId)
 }
 
-// GetCustomerCustomerIdOrdersOrderId operation middleware
-func (siw *ServerInterfaceWrapper) GetCustomerCustomerIdOrdersOrderId(c *gin.Context) {
+// GetCustomerCustomerIDOrdersOrderID operation middleware
+func (siw *ServerInterfaceWrapper) GetCustomerCustomerIDOrdersOrderID(c *gin.Context) {
 
 	var err error
 
@@ -87,7 +87,7 @@ func (siw *ServerInterfaceWrapper) GetCustomerCustomerIdOrdersOrderId(c *gin.Con
 		}
 	}
 
-	siw.Handler.GetCustomerCustomerIdOrdersOrderId(c, customerId, orderId)
+	siw.Handler.GetCustomerCustomerIDOrdersOrderID(c, customerId, orderId)
 }
 
 // GetProducts operation middleware
@@ -130,7 +130,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.POST(options.BaseURL+"/customer/:customer_id/orders", wrapper.PostCustomerCustomerIdOrders)
-	router.GET(options.BaseURL+"/customer/:customer_id/orders/:order_id", wrapper.GetCustomerCustomerIdOrdersOrderId)
+	router.POST(options.BaseURL+"/customer/:customer_id/orders", wrapper.PostCustomerCustomerIDOrders)
+	router.GET(options.BaseURL+"/customer/:customer_id/orders/:order_id", wrapper.GetCustomerCustomerIDOrdersOrderID)
 	router.GET(options.BaseURL+"/products", wrapper.GetProducts)
 }

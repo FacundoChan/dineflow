@@ -64,5 +64,5 @@ type Response struct {
 	TraceId string                 `json:"trace_id"`
 }
 
-// PostCustomerCustomerIdOrdersJSONRequestBody defines body for PostCustomerCustomerIdOrders for application/json ContentType.
-type PostCustomerCustomerIdOrdersJSONRequestBody = CreateOrderRequest
+// PostCustomerCustomerIDOrdersJSONRequestBody defines body for PostCustomerCustomerIDOrders for application/json ContentType.
+type PostCustomerCustomerIDOrdersJSONRequestBody = CreateOrderRequest

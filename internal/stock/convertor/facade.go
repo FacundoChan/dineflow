@@ -22,11 +22,6 @@ var (
 	productOnce      sync.Once
 )
 
-// var (
-// 	productStockModelConvertor *ProductStockModelConvertor
-// 	productStockModelOnce      sync.Once
-// )
-
 func NewOrderConvertor() *OrderConvertor {
 	orderOnce.Do(func() {
 		orderConvertor = new(OrderConvertor)
@@ -54,10 +49,3 @@ func NewProductConvertor() *ProductConvertor {
 	})
 	return productConvertor
 }
-
-// func NewProductModelConvertor() *ProductStockModelConvertor {
-// 	productStockModelOnce.Do(func() {
-// 		productStockModelConvertor = new(ProductStockModelConvertor)
-// 	})
-// 	return productStockModelConvertor
-// }

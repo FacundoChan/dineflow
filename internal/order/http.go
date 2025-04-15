@@ -23,7 +23,7 @@ type HTTPServer struct {
 	app app.Application
 }
 
-func (H HTTPServer) PostCustomerCustomerIdOrders(c *gin.Context, customerID string) {
+func (H HTTPServer) PostCustomerCustomerIDOrders(c *gin.Context, customerID string) {
 	var (
 		err      error
 		request  client.CreateOrderRequest
@@ -58,7 +58,7 @@ func (H HTTPServer) PostCustomerCustomerIdOrders(c *gin.Context, customerID stri
 	}
 }
 
-func (H HTTPServer) GetCustomerCustomerIdOrdersOrderId(c *gin.Context, customerID string, orderID string) {
+func (H HTTPServer) GetCustomerCustomerIDOrdersOrderID(c *gin.Context, customerID string, orderID string) {
 	var (
 		err      error
 		response struct {

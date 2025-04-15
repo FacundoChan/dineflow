@@ -12,6 +12,7 @@ servers:
 paths:
   /customer/{customer_id}/orders/{order_id}:
     get:
+      operationId: GetCustomerCustomerIDOrdersOrderID
       description: "Get order"
       parameters:
         - in: path
@@ -43,6 +44,7 @@ paths:
 
   /customer/{customer_id}/orders:
     post:
+      operationId: PostCustomerCustomerIDOrders
       description: "Create order"
       parameters:
         - in: path

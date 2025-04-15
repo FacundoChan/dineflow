@@ -4,15 +4,11 @@ import (
 	client "github.com/FacundoChan/gorder-v1/common/client/order"
 	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
-	// "github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent"
 )
 
 type ProductConvertor struct {
 }
 
-// type ProductStockModelConvertor struct {
-// }
-//
 func (c *ProductConvertor) EntityToProto(p *entity.Product) *orderpb.Product {
 	c.check(p)
 	return &orderpb.Product{
@@ -90,46 +86,6 @@ func (c *ProductConvertor) ClientsToEntities(products []client.Product) []*entit
 	return res
 }
 
-// func (c *ProductStockModelConvertor) EntitiesToPersistents(productStockModel []entity.StockModel) []persistent.StockModel {
-// 	var res []persistent.StockModel
-// 	for _, p := range productStockModel {
-// 		res = append(res, c.EntityToPersistent(p))
-// 	}
-// 	return res
-// }
-//
-// func (c *ProductStockModelConvertor) EntityToPersistent(p entity.StockModel) persistent.StockModel {
-// 	return persistent.StockModel{
-// 		ID:          p.ID,
-// 		ProductID:   p.ProductID,
-// 		Name:        p.Name,
-// 		Quantity:    p.Quantity,
-// 		Price:       p.Price,
-// 		Description: p.Description,
-// 		ImgUrls:     p.ImgUrls,
-// 	}
-// }
-//
-// func (c *ProductStockModelConvertor) PersistentsToEntities(productStockModel []persistent.StockModel) []entity.StockModel {
-// 	var res []entity.StockModel
-// 	for _, p := range productStockModel {
-// 		res = append(res, c.PersistentToEntity(p))
-// 	}
-// 	return res
-// }
-//
-// func (c ProductStockModelConvertor) PersistentToEntity(p persistent.StockModel) entity.StockModel {
-// 	return entity.StockModel{
-// 		ID:          p.ID,
-// 		ProductID:   p.ProductID,
-// 		Name:        p.Name,
-// 		Quantity:    p.Quantity,
-// 		Price:       p.Price,
-// 		Description: p.Description,
-// 		ImgUrls:     p.ImgUrls,
-// 	}
-// }
-//
 func (c *ProductConvertor) check(p any) {
 	if p == nil {
 		panic("cannot convert nil product")

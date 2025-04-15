@@ -7,7 +7,6 @@ import (
 	"github.com/FacundoChan/gorder-v1/common/utils"
 	"github.com/FacundoChan/gorder-v1/order/convertor"
 	"github.com/FacundoChan/gorder-v1/order/entity"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,7 +21,6 @@ type GetProductsHandler decorator.QueryHandler[GetProducts, *GetProductsResult]
 
 type getProductsHandler struct {
 	stockGRPC StockService
-	channel   *amqp.Channel
 }
 
 func NewGetProductsHandler(

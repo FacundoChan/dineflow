@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/product"
 )
@@ -13,13 +12,7 @@ type StripeAPI struct {
 	apiKey string
 }
 
-func NewStripeAPI() *StripeAPI {
-	logrus.Info("[NewStripeAPI] stripe-key found.")
-	stripeKey := viper.GetString("stripe-key")
-	if stripeKey == "" {
-		logrus.Fatal("stripe-key is empty")
-	}
-
+func NewStripeAPI(stripeKey string) *StripeAPI {
 	return &StripeAPI{
 		apiKey: stripeKey,
 	}

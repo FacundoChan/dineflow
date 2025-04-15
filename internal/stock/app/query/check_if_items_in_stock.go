@@ -7,9 +7,9 @@ import (
 
 	"github.com/FacundoChan/gorder-v1/common/decorator"
 	"github.com/FacundoChan/gorder-v1/common/handler/redis"
+	domainStripe "github.com/FacundoChan/gorder-v1/stock/domain"
 	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
-	"github.com/FacundoChan/gorder-v1/stock/infrastructure/integration"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -26,12 +26,12 @@ type CheckIfItemsInStockHandler decorator.QueryHandler[CheckIfItemsInStock, []*e
 
 type checkIfItemsInStockHandler struct {
 	stockRepo domain.Repository
-	stripeAPI *integration.StripeAPI
+	stripeAPI domainStripe.StripeService
 }
 
 func NewCheckIfItemsInStockHandler(
 	stockRepo domain.Repository,
-	stripeAPI *integration.StripeAPI,
+	stripeAPI domainStripe.StripeService,
 	logger *logrus.Entry,
 	metricsClient decorator.MetricsClient,
 ) CheckIfItemsInStockHandler {

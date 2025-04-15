@@ -10,13 +10,21 @@ import (
 	"github.com/FacundoChan/gorder-v1/stock/infrastructure/integration"
 	"github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 func NewApplication(ctx context.Context) app.Application {
 	// stockRepo := adapters.NewMemoryStockRepository()
 	db := persistent.NewMySQL()
 	stockRepo := adapters.NewMySQLStockRepository(db)
-	stripAPI := integration.NewStripeAPI()
+	stripeKey := viper.GetString("stripe-key")
+	if stripeKey == "" {
+		logrus.Fatal("stripe-key is empty")
+	} else {
+		logrus.Info("[NewStripeAPI] stripe-key found.")
+	}
+
+	stripAPI := integration.NewStripeAPI(stripeKey)
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.TodoMetrics{}
 

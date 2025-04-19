@@ -98,5 +98,5 @@ func TestMySQLStockRepository_UpdateStock_Race(t *testing.T) {
 
 	expected := initialStock - goroutines
 
-	assert.Equal(t, expected, res[0].Quantity)
+	assert.Equal(t, int64(expected), res[0].Quantity)
 }

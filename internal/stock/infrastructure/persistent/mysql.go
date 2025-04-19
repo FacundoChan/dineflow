@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type MySQL struct {
@@ -70,8 +71,13 @@ func (d *MySQL) UpdateStockTransaction(ctx context.Context, data []*entity.ItemW
 
 		var dest []*StockModel
 		// HACK: table name should be variable
-		if err = tx.Table("order_stock").Where("product_id IN ?", getIDFromEntities(data)).Find(&dest).Error; err != nil {
-			return errors.Wrap(err, "failed to get product_id")
+		if err = tx.Table("order_stock").
+			Clauses(clause.Locking{
+				Strength: "Update",
+			}).
+			Where("product_id IN ?", getIDFromEntities(data)).
+			Find(&dest).Error; err != nil {
+			return errors.Wrap(err, "failed to get product_id with lock")
 		}
 		existing := d.unmarshalFromDatabase(dest)
 		logrus.WithFields(logrus.Fields{

@@ -29,7 +29,7 @@ func before() {
 }
 
 func TestCreateOrder_success(t *testing.T) {
-	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
+	requestBody := sw.PostCustomerCustomerIDOrdersJSONRequestBody{
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
@@ -54,7 +54,7 @@ func TestCreateOrder_success(t *testing.T) {
 }
 
 func TestCreateOrder_invalid_prams(t *testing.T) {
-	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
+	requestBody := sw.PostCustomerCustomerIDOrdersJSONRequestBody{
 		CustomerId: customerID,
 		Items:      nil,
 	}
@@ -65,7 +65,7 @@ func TestCreateOrder_invalid_prams(t *testing.T) {
 }
 
 func TestCreateOrder_invalid_item_id(t *testing.T) {
-	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
+	requestBody := sw.PostCustomerCustomerIDOrdersJSONRequestBody{
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
@@ -90,7 +90,7 @@ func TestCreateOrder_invalid_item_id(t *testing.T) {
 }
 
 func TestCreateOrder_invalid_item_quantity(t *testing.T) {
-	requestBody := sw.PostCustomerCustomerIdOrdersJSONRequestBody{
+	requestBody := sw.PostCustomerCustomerIDOrdersJSONRequestBody{
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
@@ -114,14 +114,14 @@ func TestCreateOrder_invalid_item_quantity(t *testing.T) {
 	assert.Equal(t, 2, response.JSON200.Errorno)
 }
 
-func getResponse(t *testing.T, customerID string, body sw.PostCustomerCustomerIdOrdersJSONRequestBody) *sw.PostCustomerCustomerIdOrdersResponse {
+func getResponse(t *testing.T, customerID string, body sw.PostCustomerCustomerIDOrdersJSONRequestBody) *sw.PostCustomerCustomerIDOrdersResponse {
 	t.Helper()
 	client, err := sw.NewClientWithResponses(server)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("getResponse body=%+v", body)
-	response, err := client.PostCustomerCustomerIdOrdersWithResponse(ctx, customerID, body)
+	response, err := client.PostCustomerCustomerIDOrdersWithResponse(ctx, customerID, body)
 	if err != nil {
 		t.Fatal(err)
 	}

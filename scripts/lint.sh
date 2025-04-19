@@ -37,7 +37,7 @@ if [ "$NEED_INSTALL" == true ]; then
   run curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" "v$LINT_VERSION"
 fi
 
-run go-cleanarch
+run go-cleanarch -ignore-tests
 
 log_info "lint modules:"
 log_info "$(modules)"

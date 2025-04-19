@@ -34,6 +34,10 @@ func NewMySQL() *MySQL {
 	return &MySQL{db: db}
 }
 
+func NewMySQLWithDB(db *gorm.DB) *MySQL {
+	return &MySQL{db: db}
+}
+
 type StockModel struct {
 	ID          int64     `gorm:"column:id"`
 	ProductID   string    `gorm:"column:product_id"`
@@ -137,6 +141,10 @@ func (d *MySQL) GetAllStockProducts(ctx context.Context) ([]entity.StockModel, e
 	}
 
 	return d.PersistentsToEntities(result), nil
+}
+
+func (d *MySQL) Create(ctx context.Context, create *StockModel) error {
+	return d.db.Create(create).Error
 }
 
 func getIDFromEntities(data []*entity.ItemWithQuantity) []string {

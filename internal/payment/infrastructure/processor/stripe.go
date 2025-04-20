@@ -26,7 +26,7 @@ func NewStripeProcessor(apiKey string) *StripeProcessor {
 
 const (
 	// TODO: update successURL
-	successURL = "http://localhost:5173/success"
+	successURL = "http://localhost:3000/success"
 )
 
 func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.Order) (string, error) {

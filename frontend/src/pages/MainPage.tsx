@@ -30,7 +30,6 @@ const MainPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentLink, setPaymentLink] = useState("");
-  const [isPolling, setIsPolling] = useState(false);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const getProductById = (id: string) => products.find((p) => p.id === id);
 
@@ -56,7 +55,6 @@ const MainPage: React.FC = () => {
         if (!showPaymentModal && order.status === "waiting_for_payment") {
           setPaymentLink(order.payment_link);
           setShowPaymentModal(true);
-          setIsPolling(false);
         }
 
         if (order.status === "paid") {
@@ -93,7 +91,6 @@ const MainPage: React.FC = () => {
         return;
       }
 
-      setIsPolling(true);
       pollOrderStatus(data.customer_id, data.order_id);
     } catch (err) {
       toast("订单提交失败", {

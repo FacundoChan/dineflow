@@ -33,7 +33,6 @@ const PaymentResult: React.FC = () => {
   const [status, setStatus] = useState<string>("");
   const [hasAlerted, setHasAlerted] = useState(false);
   const [order, setOrder] = useState<OrderData | null>(null);
-  const [products, setProducts] = useState<ProductMap>({});
   const customerID = searchParams.get("customerID");
   const orderID = searchParams.get("orderID");
 
@@ -72,7 +71,6 @@ const PaymentResult: React.FC = () => {
           items: itemsWithDetails,
         });
         setStatus(orderData.status);
-        setProducts(productMap);
       } catch (error) {
         console.error("获取订单或商品信息失败", error);
         setStatus("error");

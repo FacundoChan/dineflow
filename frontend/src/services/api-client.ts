@@ -3,7 +3,8 @@ import axios from "axios";
 
 const apiClient = axios.create({
   baseURL: "http://127.0.0.1:8282",
-});
+  // baseURL: "http://host.docker.internal:8282",
+})
 
 applyInterceptors(apiClient);
 

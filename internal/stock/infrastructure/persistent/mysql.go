@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/FacundoChan/gorder-v1/common/logging"
 	"github.com/FacundoChan/gorder-v1/common/utils"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent/builder"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -88,9 +90,8 @@ func (d *MySQL) UpdateStockOptimistic(
 	) ([]*entity.ItemWithQuantity, error)) error {
 	var dest []*StockModel
 	// HACK: table name should be variable
-	if err := tx.Table("order_stock").
-		Where("product_id IN (?)", getIDFromEntities(data)).
-		Find(&dest).Error; err != nil {
+	if err := builder.NewStock().ProductIDs(getIDFromEntities(data)...).
+		Fill(tx.Table("order_stock")).Find(&dest).Error; err != nil {
 		return errors.Wrap(err, "failed to get product_id with lock")
 	}
 
@@ -107,17 +108,20 @@ func (d *MySQL) UpdateStockOptimistic(
 	for _, queryData := range data {
 		// var newestRecord entity.StockModel
 		var newestRecord StockModel
+
 		// HACK: table name should be variable
-		if err := tx.Table("order_stock").Where("product_id = (?)", queryData.ID).First(&newestRecord).Error; err != nil {
+		if err := builder.NewStock().ProductIDs(queryData.ID).
+			Fill(tx.Table("order_stock")).First(&newestRecord).Error; err != nil {
 			return err
 		}
 
-		if err := tx.Table("order_stock").Where("product_id = ? AND version = ? AND quantity - ? >= 0", queryData.ID, newestRecord.Version, queryData.Quantity).Updates(map[string]any{
-			"quantity": gorm.Expr("quantity - ?", queryData.Quantity),
-			"version":  newestRecord.Version + 1,
-		}).Error; err != nil {
+		if err := builder.NewStock().ProductIDs(queryData.ID).Versions(newestRecord.Version).QuantityGreaterEqual(queryData.Quantity).
+			Fill(tx.Table("order_stock")).
+			Updates(map[string]any{
+				"quantity": gorm.Expr("quantity - ?", queryData.Quantity),
+				"version":  newestRecord.Version + 1,
+			}).Error; err != nil {
 			return err
-
 		}
 	}
 
@@ -138,11 +142,9 @@ func (d *MySQL) UpdateStockPessimistic(
 	) ([]*entity.ItemWithQuantity, error)) error {
 	var dest []*StockModel
 	// HACK: table name should be variable
-	if err := tx.Table("order_stock").
-		Clauses(clause.Locking{
-			Strength: "Update",
-		}).
-		Where("product_id IN ?", getIDFromEntities(data)).
+	if err := builder.NewStock().ProductIDs(getIDFromEntities(data)...).
+		ForUpdate().
+		Fill(tx.Table("order_stock")).
 		Find(&dest).Error; err != nil {
 		return errors.Wrap(err, "failed to get product_id with lock")
 	}
@@ -164,8 +166,9 @@ func (d *MySQL) UpdateStockPessimistic(
 		for _, query := range data {
 			if query.ID == updatedData.ID {
 				// HACK: table name should be variable
-				if err = tx.Table("order_stock").
-					Where("product_id = ? AND quantity - ? >= 0", updatedData.ID, query.Quantity).
+				if err = builder.NewStock().ProductIDs(updatedData.ID).
+					QuantityGreaterEqual(query.Quantity).
+					Fill(tx.Table("order_stock")).
 					Update("quantity", gorm.Expr("quantity - ?", query.Quantity)).Error; err != nil {
 					return errors.Wrap(err, fmt.Sprintf("unable to update %v+", updatedData))
 				}
@@ -179,7 +182,13 @@ func (d *MySQL) UpdateStockPessimistic(
 
 func (d *MySQL) BatchGetStockByProductIDs(ctx context.Context, productIDs []string) ([]entity.StockModel, error) {
 	var result []StockModel
-	tx := d.db.WithContext(ctx).Where("product_id IN ?", productIDs).Find(&result)
+	query := builder.NewStock()
+	_, deferLog := logging.WhenMySQL(ctx, "BatchGetStockByProductIDs", query)
+
+	tx := query.Fill(d.db.WithContext(ctx).Clauses(clause.Returning{})).Find(&result)
+
+	defer deferLog(result, &tx.Error)
+
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -205,6 +214,7 @@ func (d *MySQL) GetStocksByPage(ctx context.Context, offset int, limit int) ([]e
 func (d *MySQL) GetAllStockProducts(ctx context.Context) ([]entity.StockModel, error) {
 	var result []StockModel
 
+	// TODO: replaced with builder
 	if err := d.db.WithContext(ctx).Limit(10).Find(&result).Error; err != nil {
 		return nil, err
 	}
@@ -223,7 +233,11 @@ func (d *MySQL) GetAllStockProducts(ctx context.Context) ([]entity.StockModel, e
 }
 
 func (d *MySQL) Create(ctx context.Context, create *StockModel) error {
-	return d.db.Create(create).Error
+	_, deferLog := logging.WhenMySQL(ctx, "Create", create)
+	var returning StockModel
+	err := d.db.WithContext(ctx).Model(&returning).Clauses(clause.Returning{}).Create(create).Error
+	defer deferLog(returning, &err)
+	return err
 }
 
 func getIDFromEntities(data []*entity.ItemWithQuantity) []string {

@@ -23,6 +23,9 @@ func (m MySQLStockRepository) GetItems(ctx context.Context, ids []string) ([]*en
 		result []*entity.Item
 	)
 
+	// query := builder.NewStock().ProductIDs(ids...)
+	// data, err := m.db.BatchGetStockByProductIDs(ctx, query)
+
 	data, err := m.db.BatchGetStockByProductIDs(ctx, ids)
 	if err != nil {
 		return nil, err
@@ -66,6 +69,8 @@ func (m MySQLStockRepository) GetAllProducts(ctx context.Context) ([]*entity.Pro
 }
 
 func (m MySQLStockRepository) GetStock(ctx context.Context, ids []string) ([]*entity.ItemWithQuantity, error) {
+	// query := builder.NewStock().ProductIDs(ids...)
+	// data, err := m.db.BatchGetStockByProductIDs(ctx, query)
 	data, err := m.db.BatchGetStockByProductIDs(ctx, ids)
 	if err != nil {
 		return nil, errors.Wrap(err, "BatchGetStockByProductIDs failed")

@@ -26,7 +26,7 @@ func setupTestDB(t *testing.T) *persistent.MySQL {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	assert.NoError(t, err)
 
-	testDB := viper.GetString("mysql.dbname") + "_shadow"
+	testDB := viper.GetString("mysql.db-name") + "_shadow"
 	assert.NoError(t, db.Exec("DROP DATABASE IF EXISTS "+testDB).Error)
 	assert.NoError(t, db.Exec("CREATE DATABASE IF NOT EXISTS "+testDB).Error)
 
@@ -99,4 +99,58 @@ func TestMySQLStockRepository_UpdateStock_Race(t *testing.T) {
 	expected := initialStock - goroutines
 
 	assert.Equal(t, int64(expected), res[0].Quantity)
+}
+
+func TestMySQLStockRepository_UpdateStock_OverSell(t *testing.T) {
+	t.Parallel()
+	db := setupTestDB(t)
+
+	var (
+		ctx          = context.Background()
+		testItem     = "test-over-sell-item"
+		initialStock = 10
+	)
+
+	err := db.Create(ctx, &persistent.StockModel{
+		ProductID: testItem,
+		Quantity:  int64(initialStock),
+	})
+	assert.NoError(t, err)
+
+	repo := NewMySQLStockRepository(db)
+	var wg sync.WaitGroup
+	goroutines := 50
+
+	for range goroutines {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			err := repo.UpdateStock(ctx, []*entity.ItemWithQuantity{
+				{ID: testItem, Quantity: 1},
+			}, func(ctx context.Context, existing, query []*entity.ItemWithQuantity) ([]*entity.ItemWithQuantity, error) {
+				var newItems []*entity.ItemWithQuantity
+				for _, e := range existing {
+					for _, q := range query {
+						if e.ID == q.ID {
+							newItems = append(newItems, &entity.ItemWithQuantity{
+								ID:       e.ID,
+								Quantity: e.Quantity - q.Quantity,
+							})
+							break
+						}
+					}
+				}
+				return newItems, nil
+			})
+			assert.NoError(t, err)
+		}()
+	}
+	wg.Wait()
+
+	res, err := db.BatchGetStockByProductIDs(ctx, []string{testItem})
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, res, "res can not be empty")
+
+	assert.GreaterOrEqual(t, res[0].Quantity, int64(0))
 }

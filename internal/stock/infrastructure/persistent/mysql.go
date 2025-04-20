@@ -46,6 +46,7 @@ type StockModel struct {
 	Quantity    int64     `gorm:"column:quantity"`
 	Price       float32   `gorm:"column:price"`
 	Description string    `gorm:"column:description"`
+	Version     int64     `gorm:"column:version"`
 	ImgUrls     []string  `gorm:"-"`
 	CreatedAt   time.Time `gorm:"column:created_at"`
 	UpdatedAt   time.Time `gorm:"column:updated_at"`
@@ -69,39 +70,111 @@ func (d *MySQL) UpdateStockTransaction(ctx context.Context, data []*entity.ItemW
 			}
 		}()
 
-		var dest []*StockModel
-		// HACK: table name should be variable
-		if err = tx.Table("order_stock").
-			Clauses(clause.Locking{
-				Strength: "Update",
-			}).
-			Where("product_id IN ?", getIDFromEntities(data)).
-			Find(&dest).Error; err != nil {
-			return errors.Wrap(err, "failed to get product_id with lock")
-		}
-		existing := d.unmarshalFromDatabase(dest)
-		logrus.WithFields(logrus.Fields{
-			"existing": utils.ToString(existing),
-		}).Debug("[existing]")
+		err = d.UpdateStockPessimistic(ctx, tx, data, updateFunc)
+		// err = d.UpdateStockOptimistic(ctx, tx, data, updateFunc)
 
-		updated, err := updateFunc(ctx, existing, data)
-		if err != nil {
+		return err
+	})
+
+}
+
+func (d *MySQL) UpdateStockOptimistic(
+	ctx context.Context,
+	tx *gorm.DB,
+	data []*entity.ItemWithQuantity,
+	updateFunc func(c context.Context,
+		existing []*entity.ItemWithQuantity,
+		query []*entity.ItemWithQuantity,
+	) ([]*entity.ItemWithQuantity, error)) error {
+	var dest []*StockModel
+	// HACK: table name should be variable
+	if err := tx.Table("order_stock").
+		Where("product_id IN (?)", getIDFromEntities(data)).
+		Find(&dest).Error; err != nil {
+		return errors.Wrap(err, "failed to get product_id with lock")
+	}
+
+	existing := d.unmarshalFromDatabase(dest)
+	logrus.WithFields(logrus.Fields{
+		"existing": utils.ToString(existing),
+	}).Debug("[existing]")
+
+	updated, err := updateFunc(ctx, existing, data)
+	if err != nil {
+		return err
+	}
+
+	for _, queryData := range data {
+		// var newestRecord entity.StockModel
+		var newestRecord StockModel
+		// HACK: table name should be variable
+		if err := tx.Table("order_stock").Where("product_id = (?)", queryData.ID).First(&newestRecord).Error; err != nil {
 			return err
 		}
-		logrus.WithFields(logrus.Fields{
-			"updated": utils.ToString(updated),
-		}).Debug("[updated]")
 
-		for _, updatedData := range updated {
-			// HACK: table name should be variable
-			if err = tx.Table("order_stock").Where("product_id = ?", updatedData.ID).Update("quantity", updatedData.Quantity).Error; err != nil {
-				return errors.Wrap(err, fmt.Sprintf("unable to update %v+", updatedData))
+		if err := tx.Table("order_stock").Where("product_id = ? AND version = ? AND quantity - ? >= 0", queryData.ID, newestRecord.Version, queryData.Quantity).Updates(map[string]any{
+			"quantity": gorm.Expr("quantity - ?", queryData.Quantity),
+			"version":  newestRecord.Version + 1,
+		}).Error; err != nil {
+			return err
+
+		}
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"updated": utils.ToString(updated),
+	}).Debug("[updated]")
+
+	return nil
+}
+
+func (d *MySQL) UpdateStockPessimistic(
+	ctx context.Context,
+	tx *gorm.DB,
+	data []*entity.ItemWithQuantity,
+	updateFunc func(c context.Context,
+		existing []*entity.ItemWithQuantity,
+		query []*entity.ItemWithQuantity,
+	) ([]*entity.ItemWithQuantity, error)) error {
+	var dest []*StockModel
+	// HACK: table name should be variable
+	if err := tx.Table("order_stock").
+		Clauses(clause.Locking{
+			Strength: "Update",
+		}).
+		Where("product_id IN ?", getIDFromEntities(data)).
+		Find(&dest).Error; err != nil {
+		return errors.Wrap(err, "failed to get product_id with lock")
+	}
+
+	existing := d.unmarshalFromDatabase(dest)
+	logrus.WithFields(logrus.Fields{
+		"existing": utils.ToString(existing),
+	}).Debug("[existing]")
+
+	updated, err := updateFunc(ctx, existing, data)
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"updated": utils.ToString(updated),
+	}).Debug("[updated]")
+
+	for _, updatedData := range updated {
+		for _, query := range data {
+			if query.ID == updatedData.ID {
+				// HACK: table name should be variable
+				if err = tx.Table("order_stock").
+					Where("product_id = ? AND quantity - ? >= 0", updatedData.ID, query.Quantity).
+					Update("quantity", gorm.Expr("quantity - ?", query.Quantity)).Error; err != nil {
+					return errors.Wrap(err, fmt.Sprintf("unable to update %v+", updatedData))
+				}
 			}
 		}
 
-		return nil
-	})
+	}
 
+	return nil
 }
 
 func (d *MySQL) BatchGetStockByProductIDs(ctx context.Context, productIDs []string) ([]entity.StockModel, error) {
@@ -188,6 +261,7 @@ func (d *MySQL) PersistentToEntity(p StockModel) entity.StockModel {
 		Quantity:    p.Quantity,
 		Price:       p.Price,
 		Description: p.Description,
+		Version:     p.Version,
 		ImgUrls:     p.ImgUrls,
 	}
 }

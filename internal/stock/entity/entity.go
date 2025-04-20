@@ -37,5 +37,6 @@ type StockModel struct {
 	Quantity    int64
 	Price       float32
 	Description string
+	Version     int64
 	ImgUrls     []string
 }

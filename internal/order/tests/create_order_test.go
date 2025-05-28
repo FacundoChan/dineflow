@@ -6,6 +6,8 @@ import (
 	"log"
 	"testing"
 
+	"github.com/FacundoChan/gorder-v1/common/consts"
+
 	sw "github.com/FacundoChan/gorder-v1/common/client/order"
 	_ "github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/spf13/viper"
@@ -33,7 +35,7 @@ func TestCreateOrder_success(t *testing.T) {
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
-				Id:       "prod_S38OduC65V5pGR",
+				Id:       "prod_S3CrGrzAS1MZsK",
 				Quantity: 10,
 			},
 			{
@@ -50,7 +52,7 @@ func TestCreateOrder_success(t *testing.T) {
 	response := getResponse(t, customerID, requestBody)
 
 	assert.Equal(t, 200, response.StatusCode())
-	assert.Equal(t, 0, response.JSON200.Errorno)
+	assert.Equal(t, consts.ErrnoSuccess, response.JSON200.Errorno)
 }
 
 func TestCreateOrder_invalid_prams(t *testing.T) {
@@ -61,7 +63,7 @@ func TestCreateOrder_invalid_prams(t *testing.T) {
 	response := getResponse(t, customerID, requestBody)
 
 	assert.Equal(t, 200, response.StatusCode())
-	assert.Equal(t, 2, response.JSON200.Errorno)
+	assert.Equal(t, consts.ErrnoRequestNilItemsError, response.JSON200.Errorno)
 }
 
 func TestCreateOrder_invalid_item_id(t *testing.T) {
@@ -69,7 +71,7 @@ func TestCreateOrder_invalid_item_id(t *testing.T) {
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
-				Id:       "prod_S38OduC65V5pGR",
+				Id:       "prod_S3CrGrzAS1MZsK",
 				Quantity: 10,
 			},
 			{
@@ -86,7 +88,7 @@ func TestCreateOrder_invalid_item_id(t *testing.T) {
 	response := getResponse(t, customerID, requestBody)
 
 	assert.Equal(t, 200, response.StatusCode())
-	assert.Equal(t, 2, response.JSON200.Errorno)
+	assert.Equal(t, consts.ErrnoStripeResourceMissingError, response.JSON200.Errorno)
 }
 
 func TestCreateOrder_invalid_item_quantity(t *testing.T) {
@@ -94,7 +96,7 @@ func TestCreateOrder_invalid_item_quantity(t *testing.T) {
 		CustomerId: customerID,
 		Items: []sw.ItemWithQuantity{
 			{
-				Id:       "prod_S38OduC65V5pGR",
+				Id:       "prod_S3CrGrzAS1MZsK",
 				Quantity: 10,
 			},
 			{
@@ -111,7 +113,7 @@ func TestCreateOrder_invalid_item_quantity(t *testing.T) {
 	response := getResponse(t, customerID, requestBody)
 
 	assert.Equal(t, 200, response.StatusCode())
-	assert.Equal(t, 2, response.JSON200.Errorno)
+	assert.Equal(t, consts.ErrnoRequestValidateError, response.JSON200.Errorno)
 }
 
 func getResponse(t *testing.T, customerID string, body sw.PostCustomerCustomerIDOrdersJSONRequestBody) *sw.PostCustomerCustomerIDOrdersResponse {

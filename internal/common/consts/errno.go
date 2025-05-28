@@ -7,9 +7,13 @@ const (
 	// param error 1XXX
 	ErrnoBindRequestError     = 1000
 	ErrnoRequestValidateError = 1001
+	ErrnoRequestNilItemsError = 1002
 
 	// mySQL error 2XXX
 
+	// Stripe error 3XXX
+	ErrnoStripeUnknownError         = 3000
+	ErrnoStripeResourceMissingError = 3001
 )
 
 var ErrMsg = map[int]string{

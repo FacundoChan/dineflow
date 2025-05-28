@@ -7,6 +7,7 @@ import (
 
 	"github.com/FacundoChan/gorder-v1/common/broker"
 	"github.com/FacundoChan/gorder-v1/common/decorator"
+	myError "github.com/FacundoChan/gorder-v1/common/handler/errors"
 	"github.com/FacundoChan/gorder-v1/order/app/query"
 	"github.com/FacundoChan/gorder-v1/order/convertor"
 	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
@@ -73,8 +74,9 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 
 	validItems, err := c.validate(ctx, cmd.Items)
 	if err != nil {
-		logrus.WithError(err).Error("invalid items")
-		return nil, err
+		code, mappedErr := myError.ParseStripeError(err)
+		logrus.WithError(mappedErr).Error("Stripe Error")
+		return nil, myError.NewWithError(code, mappedErr)
 	}
 
 	// HACK: should be updated

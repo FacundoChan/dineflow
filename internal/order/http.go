@@ -38,7 +38,11 @@ func (H HTTPServer) PostCustomerCustomerIDOrders(c *gin.Context, customerID stri
 		return
 	}
 	if err = H.validate(request); err != nil {
-		err = errors.NewWithError(consts.ErrnoRequestValidateError, err)
+		if request.Items == nil {
+			err = errors.NewWithError(consts.ErrnoRequestNilItemsError, err)
+		} else {
+			err = errors.NewWithError(consts.ErrnoRequestValidateError, err)
+		}
 		return
 	}
 
@@ -115,6 +119,9 @@ func (H HTTPServer) GetProducts(c *gin.Context) {
 }
 
 func (H HTTPServer) validate(request client.CreateOrderRequest) error {
+	if request.Items == nil {
+		return fmt.Errorf("request.Items is nil")
+	}
 	for _, v := range request.Items {
 		if v.Quantity <= 0 {
 			return fmt.Errorf("quantity must be positive, got %d from %s", v.Quantity, v.Id)

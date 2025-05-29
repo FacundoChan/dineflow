@@ -36,3 +36,6 @@ go.work.sum
 # MySQL data
 mysql_data/
 data/
+
+# act secrets file
+.secrets

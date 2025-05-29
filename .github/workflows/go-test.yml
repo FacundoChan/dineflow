@@ -1,0 +1,85 @@
+name: Go Integration Tests
+
+on:
+  push:
+    paths:
+      - '**.go'
+      - 'docker-compose.yml'
+      - '.github/workflows/test.yml'
+  pull_request:
+
+jobs:
+  go-integration-tests:
+    runs-on: ubuntu-latest
+    services:
+      consul:
+        image: consul:1.15
+        ports:
+          - 8500:8500
+      mysql:
+        image: mysql
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gorder_test
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+      jaeger:
+        image: jaegertracing/all-in-one
+        ports:
+          - 16686:16686
+      mongo:
+        image: mongo
+        ports:
+          - 27017:27017
+      # mongo-express:
+      #   image: mongo-express
+      #   ports:
+      #     - 8081:8081
+
+    env:
+      STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
+      ENDPOINT_STRIPE_SECRET: ${{ secrets.ENDPOINT_STRIPE_SECRET }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Install dependencies
+        run: |
+          go mod tidy
+
+      - name: Run services
+        run: |
+          for service in order kitchen stock payment; do
+            (cd internal/$service && nohup go run . > ../../$service.log 2>&1 &)
+          done
+          sleep 5
+
+      - name: Run Stock Test
+        run: |
+          (cd internal/stock/adapters && go test ./...)
+
+      - name: Show Service Logs (on failure)
+        if: failure()
+        run: |
+          for service in order kitchen stock payment; do
+            echo "=== $service logs ==="
+            cat $service.log
+          done

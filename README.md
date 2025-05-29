@@ -59,7 +59,7 @@ stripe listen --forward-to localhost:8284/api/webhook
 
 ```bash
 cd internal/order
-go run main.go
+go run .
 ```
 
 其余服务（stock、payment、kitchen）同理。
@@ -116,6 +116,8 @@ stripe listen --forward-to localhost:8284/api/webhook
 #### Makefile
 
 ```sh
+make gen          # 生成所有代码（包括 Proto 和 OpenAPI）
+make genproto     # 生成 Proto 代码
 make genopenapi   # 生成 OpenAPI 代码
 make lint         # 代码风格检查
 ```

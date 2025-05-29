@@ -7,10 +7,10 @@ import (
 
 	"go.opentelemetry.io/otel"
 
-	"github.com/FacundoChan/gorder-v1/common/broker"
-	"github.com/FacundoChan/gorder-v1/order/app"
-	"github.com/FacundoChan/gorder-v1/order/app/command"
-	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
+	"github.com/FacundoChan/dineflow/common/broker"
+	"github.com/FacundoChan/dineflow/order/app"
+	"github.com/FacundoChan/dineflow/order/app/command"
+	domain "github.com/FacundoChan/dineflow/order/domain/order"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 )

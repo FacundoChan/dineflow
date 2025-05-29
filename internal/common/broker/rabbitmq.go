@@ -8,7 +8,7 @@ import (
 	"go.opentelemetry.io/otel"
 
 	// Import config to trigger init() for config loading
-	_ "github.com/FacundoChan/gorder-v1/common/config"
+	_ "github.com/FacundoChan/dineflow/common/config"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

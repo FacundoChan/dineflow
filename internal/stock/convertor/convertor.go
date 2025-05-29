@@ -1,8 +1,8 @@
 package convertor
 
 import (
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/stock/entity"
 )
 
 type OrderConvertor struct {

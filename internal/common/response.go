@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/FacundoChan/gorder-v1/common/handler/errors"
-	"github.com/FacundoChan/gorder-v1/common/tracing"
+	"github.com/FacundoChan/dineflow/common/handler/errors"
+	"github.com/FacundoChan/dineflow/common/tracing"
 	"github.com/gin-gonic/gin"
 )
 

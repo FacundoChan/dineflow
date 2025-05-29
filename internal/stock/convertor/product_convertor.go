@@ -1,9 +1,9 @@
 package convertor
 
 import (
-	client "github.com/FacundoChan/gorder-v1/common/client/order"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	client "github.com/FacundoChan/dineflow/common/client/order"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/stock/entity"
 )
 
 type ProductConvertor struct {

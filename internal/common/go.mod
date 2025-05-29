@@ -1,4 +1,4 @@
-module github.com/FacundoChan/gorder-v1/common
+module github.com/FacundoChan/dineflow/common
 
 go 1.24.1
 

@@ -9,8 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
-	"github.com/FacundoChan/gorder-v1/order/entity"
+	domain "github.com/FacundoChan/dineflow/order/domain/order"
+	"github.com/FacundoChan/dineflow/order/entity"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

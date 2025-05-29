@@ -3,8 +3,8 @@ package query
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/common/genproto/stockpb"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/genproto/stockpb"
 )
 
 type StockService interface {

@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/FacundoChan/gorder-v1/common/decorator"
-	"github.com/FacundoChan/gorder-v1/common/handler/redis"
-	domainStripe "github.com/FacundoChan/gorder-v1/stock/domain"
-	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/FacundoChan/dineflow/common/decorator"
+	"github.com/FacundoChan/dineflow/common/handler/redis"
+	domainStripe "github.com/FacundoChan/dineflow/stock/domain"
+	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
+	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

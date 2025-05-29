@@ -3,7 +3,7 @@ package domain
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
 )
 
 type Processor interface {

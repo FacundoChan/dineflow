@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/FacundoChan/gorder-v1/common/consts"
+	"github.com/FacundoChan/dineflow/common/consts"
 	"google.golang.org/grpc/status"
 )
 

@@ -1,4 +1,4 @@
-module gorder-v1
+module dineflow
 
 go 1.24.1
 
@@ -35,12 +35,12 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/FacundoChan/gorder-v1/common => ./internal/common
+replace github.com/FacundoChan/dineflow/common => ./internal/common
 
-replace github.com/FacundoChan/gorder-v1/order => ./internal/order
+replace github.com/FacundoChan/dineflow/order => ./internal/order
 
-replace github.com/FacundoChan/gorder-v1/stock => ./internal/stock
+replace github.com/FacundoChan/dineflow/stock => ./internal/stock
 
-replace github.com/FacundoChan/gorder-v1/kitchen => ./internal/kitchen
+replace github.com/FacundoChan/dineflow/kitchen => ./internal/kitchen
 
-replace github.com/FacundoChan/gorder-v1/payment => ./internal/payment
+replace github.com/FacundoChan/dineflow/payment => ./internal/payment

@@ -3,9 +3,9 @@ package adapters
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/utils"
-	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/FacundoChan/dineflow/common/utils"
+	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
+	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

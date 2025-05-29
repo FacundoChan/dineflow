@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/FacundoChan/gorder-v1/common/discovery/consul"
+	"github.com/FacundoChan/dineflow/common/discovery/consul"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

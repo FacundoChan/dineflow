@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS gorder_v1;
+CREATE DATABASE IF NOT EXISTS dineflow;
 
-USE gorder_v1;
+USE dineflow;
 
 DROP TABLE IF EXISTS `order_stock`;
 DROP TABLE IF EXISTS `product_images`;

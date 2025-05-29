@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/FacundoChan/gorder-v1/order/entity"
+	"github.com/FacundoChan/dineflow/order/entity"
 	"github.com/stripe/stripe-go/v81"
 )
 

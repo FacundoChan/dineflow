@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/FacundoChan/gorder-v1/common/broker"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/broker"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"

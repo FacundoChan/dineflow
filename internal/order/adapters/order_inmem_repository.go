@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
+	domain "github.com/FacundoChan/dineflow/order/domain/order"
 	"github.com/sirupsen/logrus"
 )
 

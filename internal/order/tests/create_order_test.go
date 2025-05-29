@@ -6,10 +6,10 @@ import (
 	"log"
 	"testing"
 
-	"github.com/FacundoChan/gorder-v1/common/consts"
+	"github.com/FacundoChan/dineflow/common/consts"
 
-	sw "github.com/FacundoChan/gorder-v1/common/client/order"
-	_ "github.com/FacundoChan/gorder-v1/common/config"
+	sw "github.com/FacundoChan/dineflow/common/client/order"
+	_ "github.com/FacundoChan/dineflow/common/config"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

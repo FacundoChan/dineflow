@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/FacundoChan/dineflow/stock/entity"
 )
 
 type Repository interface {

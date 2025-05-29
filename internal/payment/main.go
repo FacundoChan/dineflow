@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/broker"
-	_ "github.com/FacundoChan/gorder-v1/common/config"
-	"github.com/FacundoChan/gorder-v1/common/logging"
-	"github.com/FacundoChan/gorder-v1/common/server"
-	"github.com/FacundoChan/gorder-v1/common/tracing"
-	"github.com/FacundoChan/gorder-v1/payment/infrastructure/consumer"
-	"github.com/FacundoChan/gorder-v1/payment/service"
+	"github.com/FacundoChan/dineflow/common/broker"
+	_ "github.com/FacundoChan/dineflow/common/config"
+	"github.com/FacundoChan/dineflow/common/logging"
+	"github.com/FacundoChan/dineflow/common/server"
+	"github.com/FacundoChan/dineflow/common/tracing"
+	"github.com/FacundoChan/dineflow/payment/infrastructure/consumer"
+	"github.com/FacundoChan/dineflow/payment/service"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

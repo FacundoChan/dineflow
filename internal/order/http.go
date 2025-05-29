@@ -5,16 +5,16 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	client "github.com/FacundoChan/gorder-v1/common/client/order"
-	"github.com/FacundoChan/gorder-v1/common/consts"
+	client "github.com/FacundoChan/dineflow/common/client/order"
+	"github.com/FacundoChan/dineflow/common/consts"
 
-	"github.com/FacundoChan/gorder-v1/common"
-	"github.com/FacundoChan/gorder-v1/common/handler/errors"
-	"github.com/FacundoChan/gorder-v1/order/app"
-	"github.com/FacundoChan/gorder-v1/order/app/command"
-	"github.com/FacundoChan/gorder-v1/order/app/dto"
-	"github.com/FacundoChan/gorder-v1/order/app/query"
-	"github.com/FacundoChan/gorder-v1/order/convertor"
+	"github.com/FacundoChan/dineflow/common"
+	"github.com/FacundoChan/dineflow/common/handler/errors"
+	"github.com/FacundoChan/dineflow/order/app"
+	"github.com/FacundoChan/dineflow/order/app/command"
+	"github.com/FacundoChan/dineflow/order/app/dto"
+	"github.com/FacundoChan/dineflow/order/app/query"
+	"github.com/FacundoChan/dineflow/order/convertor"
 	"github.com/gin-gonic/gin"
 )
 

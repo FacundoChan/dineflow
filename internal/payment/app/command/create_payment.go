@@ -3,10 +3,10 @@ package command
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/decorator"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/common/tracing"
-	"github.com/FacundoChan/gorder-v1/payment/domain"
+	"github.com/FacundoChan/dineflow/common/decorator"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/tracing"
+	"github.com/FacundoChan/dineflow/payment/domain"
 	"github.com/sirupsen/logrus"
 )
 

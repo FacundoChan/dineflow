@@ -1,10 +1,10 @@
 package convertor
 
 import (
-	client "github.com/FacundoChan/gorder-v1/common/client/order"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
-	"github.com/FacundoChan/gorder-v1/order/entity"
+	client "github.com/FacundoChan/dineflow/common/client/order"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	domain "github.com/FacundoChan/dineflow/order/domain/order"
+	"github.com/FacundoChan/dineflow/order/entity"
 )
 
 type OrderConvertor struct {

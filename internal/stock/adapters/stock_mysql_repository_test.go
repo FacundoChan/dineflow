@@ -6,9 +6,9 @@ import (
 	"sync"
 	"testing"
 
-	_ "github.com/FacundoChan/gorder-v1/common/config"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
-	"github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent"
+	_ "github.com/FacundoChan/dineflow/common/config"
+	"github.com/FacundoChan/dineflow/stock/entity"
+	"github.com/FacundoChan/dineflow/stock/infrastructure/persistent"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

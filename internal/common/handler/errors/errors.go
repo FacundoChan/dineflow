@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/FacundoChan/gorder-v1/common/consts"
+	"github.com/FacundoChan/dineflow/common/consts"
 )
 
 type Error struct {

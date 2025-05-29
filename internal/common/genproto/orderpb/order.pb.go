@@ -7,13 +7,12 @@
 package orderpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -448,7 +447,7 @@ const file_orderpb_order_proto_rawDesc = "" +
 	"\fOrderService\x12B\n" +
 	"\vCreateOrder\x12\x1b.orderpb.CreateOrderRequest\x1a\x16.google.protobuf.Empty\x124\n" +
 	"\bGetOrder\x12\x18.orderpb.GetOrderRequest\x1a\x0e.orderpb.Order\x125\n" +
-	"\vUpdateOrder\x12\x0e.orderpb.Order\x1a\x16.google.protobuf.EmptyB:Z8github.com/FacundoChan/gorder-v1/common/genproto/orderpbb\x06proto3"
+	"\vUpdateOrder\x12\x0e.orderpb.Order\x1a\x16.google.protobuf.EmptyB9Z7github.com/FacundoChan/dineflow/common/genproto/orderpbb\x06proto3"
 
 var (
 	file_orderpb_order_proto_rawDescOnce sync.Once

@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
+	"github.com/FacundoChan/dineflow/stock/entity"
 )
 
 type MemoryStockRepository struct {

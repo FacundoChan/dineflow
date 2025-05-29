@@ -46,7 +46,7 @@ mysql:
   password: root
   host: 127.0.0.1
   port: 3307
-  db-name: gorder_v1
+  db-name: dineflow
 
 redis:
   local:

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/FacundoChan/gorder-v1/order/app/command"
-	"github.com/FacundoChan/gorder-v1/order/app/query"
+	"github.com/FacundoChan/dineflow/order/app/command"
+	"github.com/FacundoChan/dineflow/order/app/query"
 )
 
 type Application struct {

@@ -3,12 +3,12 @@ package ports
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/order/app"
-	"github.com/FacundoChan/gorder-v1/order/app/command"
-	"github.com/FacundoChan/gorder-v1/order/app/query"
-	"github.com/FacundoChan/gorder-v1/order/convertor"
-	domain "github.com/FacundoChan/gorder-v1/order/domain/order"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/order/app"
+	"github.com/FacundoChan/dineflow/order/app/command"
+	"github.com/FacundoChan/dineflow/order/app/query"
+	"github.com/FacundoChan/dineflow/order/convertor"
+	domain "github.com/FacundoChan/dineflow/order/domain/order"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

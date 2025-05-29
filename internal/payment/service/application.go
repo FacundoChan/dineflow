@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 
-	grpcClient "github.com/FacundoChan/gorder-v1/common/client"
-	"github.com/FacundoChan/gorder-v1/common/metrics"
-	"github.com/FacundoChan/gorder-v1/payment/adapters"
-	"github.com/FacundoChan/gorder-v1/payment/app"
-	"github.com/FacundoChan/gorder-v1/payment/app/command"
-	"github.com/FacundoChan/gorder-v1/payment/domain"
-	"github.com/FacundoChan/gorder-v1/payment/infrastructure/processor"
+	grpcClient "github.com/FacundoChan/dineflow/common/client"
+	"github.com/FacundoChan/dineflow/common/metrics"
+	"github.com/FacundoChan/dineflow/payment/adapters"
+	"github.com/FacundoChan/dineflow/payment/app"
+	"github.com/FacundoChan/dineflow/payment/app/command"
+	"github.com/FacundoChan/dineflow/payment/domain"
+	"github.com/FacundoChan/dineflow/payment/infrastructure/processor"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

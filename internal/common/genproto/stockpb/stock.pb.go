@@ -7,13 +7,12 @@
 package stockpb
 
 import (
+	orderpb "github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	orderpb "github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -307,7 +306,7 @@ const file_stockpb_stock_proto_rawDesc = "" +
 	"\fStockService\x12?\n" +
 	"\bGetItems\x12\x18.stockpb.GetItemsRequest\x1a\x19.stockpb.GetItemsResponse\x12`\n" +
 	"\x13CheckIfItemsInStock\x12#.stockpb.CheckIfItemsInStockRequest\x1a$.stockpb.CheckIfItemsInStockResponse\x12Q\n" +
-	"\x0eGetAllProducts\x12\x1e.stockpb.GetAllProductsRequest\x1a\x1f.stockpb.GetAllProductsResponseB:Z8github.com/FacundoChan/gorder-v1/common/genproto/stockpbb\x06proto3"
+	"\x0eGetAllProducts\x12\x1e.stockpb.GetAllProductsRequest\x1a\x1f.stockpb.GetAllProductsResponseB9Z7github.com/FacundoChan/dineflow/common/genproto/stockpbb\x06proto3"
 
 var (
 	file_stockpb_stock_proto_rawDescOnce sync.Once

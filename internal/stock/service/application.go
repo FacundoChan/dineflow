@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/metrics"
-	"github.com/FacundoChan/gorder-v1/stock/adapters"
-	"github.com/FacundoChan/gorder-v1/stock/app"
-	"github.com/FacundoChan/gorder-v1/stock/app/query"
-	"github.com/FacundoChan/gorder-v1/stock/infrastructure/integration"
-	"github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent"
+	"github.com/FacundoChan/dineflow/common/metrics"
+	"github.com/FacundoChan/dineflow/stock/adapters"
+	"github.com/FacundoChan/dineflow/stock/app"
+	"github.com/FacundoChan/dineflow/stock/app/query"
+	"github.com/FacundoChan/dineflow/stock/infrastructure/integration"
+	"github.com/FacundoChan/dineflow/stock/infrastructure/persistent"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

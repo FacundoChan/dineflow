@@ -3,10 +3,10 @@ package query
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/decorator"
-	"github.com/FacundoChan/gorder-v1/common/utils"
-	"github.com/FacundoChan/gorder-v1/order/convertor"
-	"github.com/FacundoChan/gorder-v1/order/entity"
+	"github.com/FacundoChan/dineflow/common/decorator"
+	"github.com/FacundoChan/dineflow/common/utils"
+	"github.com/FacundoChan/dineflow/order/convertor"
+	"github.com/FacundoChan/dineflow/order/entity"
 	"github.com/sirupsen/logrus"
 )
 

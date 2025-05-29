@@ -1,6 +1,6 @@
 package app
 
-import "github.com/FacundoChan/gorder-v1/stock/app/query"
+import "github.com/FacundoChan/dineflow/stock/app/query"
 
 type Application struct {
 	Commands Commands

@@ -3,8 +3,8 @@ package adapters
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/common/tracing"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/tracing"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 )

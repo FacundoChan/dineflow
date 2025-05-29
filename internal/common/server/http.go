@@ -3,7 +3,7 @@ package server
 import (
 	"time"
 
-	"github.com/FacundoChan/gorder-v1/common/middleware"
+	"github.com/FacundoChan/dineflow/common/middleware"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 

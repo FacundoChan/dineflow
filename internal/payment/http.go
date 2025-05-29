@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/FacundoChan/gorder-v1/common/broker"
-	"github.com/FacundoChan/gorder-v1/common/genproto/orderpb"
-	"github.com/FacundoChan/gorder-v1/payment/domain"
+	"github.com/FacundoChan/dineflow/common/broker"
+	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/payment/domain"
 	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"

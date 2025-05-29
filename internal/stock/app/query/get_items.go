@@ -3,9 +3,9 @@ package query
 import (
 	"context"
 
-	"github.com/FacundoChan/gorder-v1/common/decorator"
-	domain "github.com/FacundoChan/gorder-v1/stock/domain/stock"
-	"github.com/FacundoChan/gorder-v1/stock/entity"
+	"github.com/FacundoChan/dineflow/common/decorator"
+	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
+	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/sirupsen/logrus"
 )
 

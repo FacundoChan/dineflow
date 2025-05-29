@@ -1,11 +1,11 @@
-module github.com/FacundoChan/gorder-v1/order
+module github.com/FacundoChan/dineflow/order
 
 go 1.24.1
 
-replace github.com/FacundoChan/gorder-v1/common => ../common
+replace github.com/FacundoChan/dineflow/common => ../common
 
 require (
-	github.com/FacundoChan/gorder-v1/common v0.0.0-00010101000000-000000000000
+	github.com/FacundoChan/dineflow/common v0.0.0-00010101000000-000000000000
 	github.com/gin-gonic/gin v1.10.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1

@@ -9,10 +9,12 @@ import (
 	_ "github.com/FacundoChan/gorder-v1/common/config"
 	"github.com/FacundoChan/gorder-v1/stock/entity"
 	"github.com/FacundoChan/gorder-v1/stock/infrastructure/persistent"
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func setupTestDB(t *testing.T) *persistent.MySQL {
@@ -26,7 +28,9 @@ func setupTestDB(t *testing.T) *persistent.MySQL {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	assert.NoError(t, err)
 
-	testDB := viper.GetString("mysql.db-name") + "_shadow"
+	// testDB := viper.GetString("mysql.db-name") + "_shadow"
+	testDB := fmt.Sprintf("%s_shadow_%s", viper.GetString("mysql.db-name"), uuid.New().String()[0:8])
+
 	assert.NoError(t, db.Exec("DROP DATABASE IF EXISTS "+testDB).Error)
 	assert.NoError(t, db.Exec("CREATE DATABASE IF NOT EXISTS "+testDB).Error)
 
@@ -37,7 +41,9 @@ func setupTestDB(t *testing.T) *persistent.MySQL {
 		viper.GetString("mysql.port"),
 		testDB,
 	)
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 
 	assert.NoError(t, err)
 	assert.NoError(t, db.AutoMigrate(persistent.StockModel{}))

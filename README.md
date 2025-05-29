@@ -151,6 +151,7 @@ go test ./...
 
 - Consul: http://127.0.0.1:8500/ui/dc1/services
 - Jaeger: http://localhost:16686/search
+- MongoExpress: http://localhost:8082
 
 ## 贡献
 

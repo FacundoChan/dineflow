@@ -66,7 +66,7 @@ go run .
 
 ### 5. 前端
 
-访问 [http://localhost:3000](http://localhost:3000)
+访问 [http://localhost:3001](http://localhost:3001)
 
 ## 目录结构
 
@@ -138,7 +138,7 @@ lint: golangci-lint run --config ../../.golangci.yaml
 运行部分测试（`stock`部分示例）：
 
 ```sh
-cd internel/stock/adapters
+cd internal/stock/adapters
 go test -run 'OverSell'
 go test -run 'Race'
 ```

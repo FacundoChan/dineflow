@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func SetNX(ctx context.Context, client *redis.Client, key, value string, ttl time.Duration) (err error) {
+func SetNX(ctx context.Context, client *redis.Client, key, value string, ttl time.Duration) (ok bool, err error) {
 	now := time.Now()
 	defer func() {
 		l := logrus.WithContext(ctx).WithFields(logrus.Fields{
@@ -27,12 +27,12 @@ func SetNX(ctx context.Context, client *redis.Client, key, value string, ttl tim
 	}()
 
 	if client == nil {
-		return errors.New("redis client is nil")
+		return false, errors.New("redis client is nil")
 	}
 
-	_, err = client.SetNX(ctx, key, value, ttl).Result()
+	ok, err = client.SetNX(ctx, key, value, ttl).Result()
 
-	return err
+	return ok, err
 }
 
 func Del(ctx context.Context, client *redis.Client, key string) (err error) {

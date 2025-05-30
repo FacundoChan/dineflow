@@ -116,6 +116,40 @@ func TestCreateOrder_invalid_item_quantity(t *testing.T) {
 	assert.Equal(t, consts.ErrnoRequestValidateError, response.JSON200.Errorno)
 }
 
+func TestCreateOrder_idempotent(t *testing.T) {
+	requestBody := sw.PostCustomerCustomerIDOrdersJSONRequestBody{
+		CustomerId: customerID,
+		Items: []sw.ItemWithQuantity{
+			{
+				Id:       "prod_S3CrGrzAS1MZsK",
+				Quantity: 2,
+			},
+			{
+				Id:       "prod_S3Cr3l2WHdiL53",
+				Quantity: 3,
+			},
+		},
+	}
+
+	// First order
+	response1 := getResponse(t, customerID, requestBody)
+	assert.Equal(t, 200, response1.StatusCode())
+	assert.Equal(t, consts.ErrnoSuccess, response1.JSON200.Errorno)
+	orderID1, ok1 := response1.JSON200.Data["order_id"].(string)
+	assert.True(t, ok1)
+	assert.NotEmpty(t, orderID1)
+
+	// Second order with the same content
+	response2 := getResponse(t, customerID, requestBody)
+	assert.Equal(t, 200, response2.StatusCode())
+	assert.Equal(t, consts.ErrnoSuccess, response2.JSON200.Errorno)
+	orderID2, ok2 := response2.JSON200.Data["order_id"].(string)
+	assert.True(t, ok2)
+	assert.NotEmpty(t, orderID2)
+
+	assert.Equal(t, orderID1, orderID2)
+}
+
 func getResponse(t *testing.T, customerID string, body sw.PostCustomerCustomerIDOrdersJSONRequestBody) *sw.PostCustomerCustomerIDOrdersResponse {
 	t.Helper()
 	client, err := sw.NewClientWithResponses(server)

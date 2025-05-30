@@ -2,12 +2,16 @@ package command
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"sort"
+	"time"
 
 	"github.com/FacundoChan/dineflow/common/broker"
 	"github.com/FacundoChan/dineflow/common/decorator"
 	myError "github.com/FacundoChan/dineflow/common/handler/errors"
+	"github.com/FacundoChan/dineflow/common/handler/redis"
 	"github.com/FacundoChan/dineflow/order/app/query"
 	"github.com/FacundoChan/dineflow/order/convertor"
 	domain "github.com/FacundoChan/dineflow/order/domain/order"
@@ -64,6 +68,16 @@ func NewCreateOrderHandler(
 }
 
 func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*CreateOrderResult, error) {
+	// generate a hash of the order content for deduplication
+	orderHash := hashOrderContent(cmd.CustomerID, cmd.Items)
+	key := "order_dedup:" + cmd.CustomerID + ":" + orderHash
+	logrus.Debugf("Redis key for deduplication: %s", key)
+
+	orderID, err := redis.LocalClient().Get(ctx, key).Result()
+	if err == nil && orderID != "" {
+		return &CreateOrderResult{OrderID: orderID}, nil
+	}
+
 	q, err := c.channel.QueueDeclare(broker.EventOrderCreated, true, false, false, false, nil)
 	if err != nil {
 		return nil, err
@@ -110,6 +124,11 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 	}
 	order, err := c.orderRepo.Create(ctx, pendingOrder)
 
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = redis.SetNX(ctx, redis.LocalClient(), key, order.ID, 5*time.Minute)
 	if err != nil {
 		return nil, err
 	}
@@ -169,4 +188,17 @@ func packItems(items []*entity.ItemWithQuantity) []*entity.ItemWithQuantity {
 		})
 	}
 	return res
+}
+
+// Generate a hash of the order content for deduplication
+func hashOrderContent(customerID string, items []*entity.ItemWithQuantity) string {
+	var itemStrs []string
+	for _, item := range items {
+		itemStrs = append(itemStrs, fmt.Sprintf("%s:%d", item.ID, item.Quantity))
+	}
+	sort.Strings(itemStrs)
+	content := customerID + ":" + fmt.Sprintf("%v", itemStrs)
+	logrus.Debugf("hashOrderContent: %s", content)
+	hash := sha256.Sum256([]byte(content))
+	return fmt.Sprintf("%x", hash[:])
 }

@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"time"
 
@@ -52,6 +53,7 @@ func NewCheckIfItemsInStockHandler(
 }
 
 func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfItemsInStock) ([]*entity.Item, error) {
+	logrus.Debugf("redis_lock_key: %s", getLockKey(query))
 	if err := lock(ctx, getLockKey(query)); err != nil {
 		return nil, errors.Wrapf(err, "redis lock error: key=%s", getLockKey(query))
 	}
@@ -90,11 +92,14 @@ func getLockKey(query CheckIfItemsInStock) string {
 	for _, i := range query.Items {
 		ids = append(ids, i.ID)
 	}
+	// Sort the ids to avoid different locks for the same items
+	sort.Strings(ids)
 	return redisLockPrefix + strings.Join(ids, "_")
 }
 
 func lock(ctx context.Context, key string) error {
-	return redis.SetNX(ctx, redis.LocalClient(), key, "1", 5*time.Minute)
+	_, err := redis.SetNX(ctx, redis.LocalClient(), key, "1", 5*time.Minute)
+	return err
 }
 
 func unlock(ctx context.Context, key string) error {

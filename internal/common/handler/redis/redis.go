@@ -1,11 +1,13 @@
 package redis
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/FacundoChan/dineflow/common/handler/factory"
 	"github.com/redis/go-redis/v9"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -47,9 +49,13 @@ func supplier(key string) any {
 
 	var c Section
 	if err := viper.UnmarshalKey(confKey, &c); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"confKey": confKey,
+			"err":     err,
+		}).Error("Failed to unmarshal redis config")
 		panic(err)
 	}
-	return redis.NewClient(&redis.Options{
+	client := redis.NewClient(&redis.Options{
 		Network:         "tcp",
 		Addr:            fmt.Sprintf("%s:%s", c.IP, c.Port),
 		ReadTimeout:     c.ReadTimeout * time.Millisecond,
@@ -58,4 +64,17 @@ func supplier(key string) any {
 		MaxActiveConns:  c.MaxConn,
 		ConnMaxLifetime: c.ConnTimeout * time.Millisecond,
 	})
+	// Ping the Redis server to check if it's available
+	if err := client.Ping(context.Background()).Err(); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"addr": client.Options().Addr,
+			"err":  err,
+		}).Error("Redis server is not available")
+	} else {
+		logrus.WithFields(logrus.Fields{
+			"addr": client.Options().Addr,
+			// "version": client.Info(context.Background(), "server").String(),
+		}).Info("Redis server is available")
+	}
+	return client
 }

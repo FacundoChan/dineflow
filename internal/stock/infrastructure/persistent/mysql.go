@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/FacundoChan/dineflow/common/format"
 	"github.com/FacundoChan/dineflow/common/logging"
-	"github.com/FacundoChan/dineflow/common/utils"
 	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/FacundoChan/dineflow/stock/infrastructure/persistent/builder"
 	"github.com/pkg/errors"
@@ -97,7 +97,7 @@ func (d *MySQL) UpdateStockOptimistic(
 
 	existing := d.unmarshalFromDatabase(dest)
 	logrus.WithFields(logrus.Fields{
-		"existing": utils.ToString(existing),
+		"existing": format.ToString(existing),
 	}).Debug("[existing]")
 
 	updated, err := updateFunc(ctx, existing, data)
@@ -126,7 +126,7 @@ func (d *MySQL) UpdateStockOptimistic(
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"updated": utils.ToString(updated),
+		"updated": format.ToString(updated),
 	}).Debug("[updated]")
 
 	return nil
@@ -140,9 +140,17 @@ func (d *MySQL) UpdateStockPessimistic(
 		existing []*entity.ItemWithQuantity,
 		query []*entity.ItemWithQuantity,
 	) ([]*entity.ItemWithQuantity, error)) error {
+	_, deferLog := logging.WhenMySQL(ctx, "UpdateStockPessimistic", data)
+	var updateResult []*entity.ItemWithQuantity
+	var err error
+
+	defer func() {
+		deferLog(updateResult, &err)
+	}()
+
 	var dest []*StockModel
 	// HACK: table name should be variable
-	if err := builder.NewStock().ProductIDs(getIDFromEntities(data)...).
+	if err = builder.NewStock().ProductIDs(getIDFromEntities(data)...).
 		ForUpdate().
 		Fill(tx.Table("order_stock")).
 		Find(&dest).Error; err != nil {
@@ -151,18 +159,18 @@ func (d *MySQL) UpdateStockPessimistic(
 
 	existing := d.unmarshalFromDatabase(dest)
 	logrus.WithFields(logrus.Fields{
-		"existing": utils.ToString(existing),
+		"existing": format.ToString(existing),
 	}).Debug("[existing]")
 
-	updated, err := updateFunc(ctx, existing, data)
+	updateResult, err = updateFunc(ctx, existing, data)
 	if err != nil {
 		return err
 	}
 	logrus.WithFields(logrus.Fields{
-		"updated": utils.ToString(updated),
+		"updated": format.ToString(updateResult),
 	}).Debug("[updated]")
 
-	for _, updatedData := range updated {
+	for _, updatedData := range updateResult {
 		for _, query := range data {
 			if query.ID == updatedData.ID {
 				// HACK: table name should be variable

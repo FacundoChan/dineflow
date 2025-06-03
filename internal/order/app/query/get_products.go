@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/FacundoChan/dineflow/common/decorator"
-	"github.com/FacundoChan/dineflow/common/utils"
+	"github.com/FacundoChan/dineflow/common/format"
 	"github.com/FacundoChan/dineflow/order/convertor"
 	"github.com/FacundoChan/dineflow/order/entity"
 	"github.com/sirupsen/logrus"
@@ -48,7 +48,7 @@ func (g getProductsHandler) Handle(ctx context.Context, query GetProducts) (*Get
 	result := convertor.NewProductConvertor().ProtosToEntities(response.Products)
 
 	logrus.WithFields(logrus.Fields{
-		"result": utils.ToString(result),
+		"result": format.ToString(result),
 	}).Debug("[getProductsHandler.Handle]")
 
 	return &GetProductsResult{Products: result}, nil

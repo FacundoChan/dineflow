@@ -3,7 +3,7 @@ package adapters
 import (
 	"context"
 
-	"github.com/FacundoChan/dineflow/common/utils"
+	"github.com/FacundoChan/dineflow/common/format"
 	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
 	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/pkg/errors"
@@ -52,7 +52,7 @@ func (m MySQLStockRepository) GetAllProducts(ctx context.Context) ([]*entity.Pro
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"items": utils.ToString(data),
+		"items": format.ToString(data),
 	}).Debug("[data]")
 
 	for _, d := range data {

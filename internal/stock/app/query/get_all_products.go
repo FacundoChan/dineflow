@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/FacundoChan/dineflow/common/decorator"
-	"github.com/FacundoChan/dineflow/common/utils"
+	"github.com/FacundoChan/dineflow/common/format"
 	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
 	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/sirupsen/logrus"
@@ -34,7 +34,7 @@ func NewGetAllProductsHandler(stockRepo domain.Repository, logger *logrus.Entry,
 func (g getAllProductsHandler) Handle(ctx context.Context, query GetAllProducts) ([]*entity.Product, error) {
 	allProducts, err := g.stockRepo.GetAllProducts(ctx)
 	logrus.WithFields(logrus.Fields{
-		"products": utils.ToString(allProducts),
+		"products": format.ToString(allProducts),
 	}).Debug("[getAllItemsHandler.Handle]")
 	if err != nil {
 		logrus.Debugf("get all products err: %v", err)

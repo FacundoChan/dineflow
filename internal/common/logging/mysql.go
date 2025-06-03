@@ -2,10 +2,10 @@ package logging
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 	"time"
 
+	format "github.com/FacundoChan/dineflow/common/format"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,6 +16,10 @@ const (
 	Response = "response"
 	Error    = "err"
 )
+
+type ArgFormatter interface {
+	FormatArg() (string, error)
+}
 
 func WhenMySQL(ctx context.Context, method string, args ...any) (logrus.Fields, func(any, *error)) {
 	fields := logrus.Fields{
@@ -48,14 +52,21 @@ func formatMySQLArgs(args []any) string {
 	return strings.Join(item, ", ")
 }
 
-func formatMySQLArg(arg any) string {
-	switch v := arg.(type) {
+func formatMySQLArg(arg any) (str string) {
+	var err error
 
-	default:
-		bytes, err := json.Marshal(v)
+	defer func() {
 		if err != nil {
-			return "unsupported type in formatMySQLArg, err=" + err.Error()
+			str = "unsupported type in formatMySQLArg, err=" + err.Error()
 		}
-		return string(bytes)
+	}()
+
+	switch v := arg.(type) {
+	case ArgFormatter:
+		str, err = v.FormatArg()
+	default:
+		str, err = format.MarshalString(v)
 	}
+
+	return str
 }

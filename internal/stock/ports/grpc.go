@@ -3,9 +3,9 @@ package ports
 import (
 	"context"
 
+	"github.com/FacundoChan/dineflow/common/format"
 	"github.com/FacundoChan/dineflow/common/genproto/stockpb"
 	"github.com/FacundoChan/dineflow/common/tracing"
-	"github.com/FacundoChan/dineflow/common/utils"
 	"github.com/FacundoChan/dineflow/stock/app"
 	"github.com/FacundoChan/dineflow/stock/app/query"
 	"github.com/FacundoChan/dineflow/stock/convertor"
@@ -81,7 +81,7 @@ func (G GRPCServer) GetAllProducts(ctx context.Context, request *stockpb.GetAllP
 
 	allProducts, err := G.app.Queries.GetAllProducts.Handle(ctx, query.GetAllProducts{})
 	logrus.WithFields(logrus.Fields{
-		"products": utils.ToString(allProducts),
+		"products": format.ToString(allProducts),
 	}).Debug("[grpc.GetAllProducts]")
 	if err != nil {
 		logrus.WithError(err).Error("rpc_request_err")

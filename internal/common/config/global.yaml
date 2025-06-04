@@ -12,18 +12,21 @@ order:
   server-to-run: http
   http-addr: 127.0.0.1:8282
   grpc-addr: 127.0.0.1:5002
+  metrics_export_addr: 127.0.0.1:9123
 
 stock:
   service-name: stock
   server-to-run: grpc
   http-addr: 127.0.0.1:8283
   grpc-addr: 127.0.0.1:5003
+  metrics_export_addr: 127.0.0.1:9124
 
 payment:
   service-name: payment
   server-to-run: http
   http-addr: 127.0.0.1:8284
   grpc-addr: 127.0.0.1:5004
+  metrics_export_addr: 127.0.0.1:9125
 
 rabbit-mq:
   user: guest

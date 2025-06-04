@@ -26,7 +26,11 @@ func NewApplication(ctx context.Context) app.Application {
 
 	stripAPI := integration.NewStripeAPI(stripeKey)
 	logger := logrus.NewEntry(logrus.StandardLogger())
-	metricsClient := metrics.TodoMetrics{}
+	metricsClient := metrics.NewPrometheusMetricsClient(&metrics.PrometheusMetricsClientConfig{
+		ServiceName: viper.GetString("stock.service-name"),
+		Host:        viper.GetString("stock.metrics_export_addr"),
+	})
+	logrus.Info("PrometheusMetricsClient initialized")
 
 	return app.Application{
 		Commands: app.Commands{},

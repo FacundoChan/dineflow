@@ -29,7 +29,11 @@ func NewApplication(ctx context.Context) (app.Application, func()) {
 
 func newApplication(_ context.Context, orderGRPC command.OrderService, processor domain.Processor) app.Application {
 	logger := logrus.NewEntry(logrus.StandardLogger())
-	metricsClient := metrics.TodoMetrics{}
+	metricsClient := metrics.NewPrometheusMetricsClient(&metrics.PrometheusMetricsClientConfig{
+		ServiceName: viper.GetString("payment.service-name"),
+		Host:        viper.GetString("payment.metrics_export_addr"),
+	})
+	logrus.Debugf("TOBUDELETED")
 
 	return app.Application{
 		Commands: app.Commands{

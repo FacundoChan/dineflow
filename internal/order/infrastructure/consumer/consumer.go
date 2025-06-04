@@ -8,9 +8,11 @@ import (
 	"go.opentelemetry.io/otel"
 
 	"github.com/FacundoChan/dineflow/common/broker"
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/FacundoChan/dineflow/order/app"
 	"github.com/FacundoChan/dineflow/order/app/command"
 	domain "github.com/FacundoChan/dineflow/order/domain/order"
+	"github.com/pkg/errors"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 )
@@ -49,24 +51,28 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 }
 
 func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Channel) {
-	logrus.Infof("kitchen receive a msg from %s=%v", q.Name, string(msg.Body))
 	ctx := broker.ExtractRabbitMQHeaders(context.Background(), msg.Headers)
 	t := otel.Tracer("rabbit-mq")
 	_, span := t.Start(ctx, fmt.Sprintf("rabbit-mq.%s.consume", q.Name))
 	defer span.End()
 
+	logging.Infof(ctx, nil, "Order received a message from %s, msg=%v", q.Name, string(msg.Body))
+
 	var err error
 	defer func() {
 		if err != nil {
+			logging.Warnf(ctx, nil, "failed to consumed message from %v, msg=%v err: %v", q.Name, msg, err)
 			_ = msg.Nack(false, false)
 		} else {
+			logging.Infof(ctx, nil, "comsumed message successfully from %v, msg=%v", q.Name, msg)
 			_ = msg.Ack(false)
 		}
 	}()
 
+	// TODO: ACL Cleaning
 	order := &domain.Order{}
-	if err := json.Unmarshal(msg.Body, order); err != nil {
-		logrus.Infof("unmarshal order error: %s", err)
+	if err = json.Unmarshal(msg.Body, order); err != nil {
+		err = errors.Wrap(err, "failed to unmarshal msg to order")
 		return
 	}
 
@@ -80,9 +86,9 @@ func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Chann
 		},
 	})
 	if err != nil {
-		logrus.Infof("update order error: %s, orderID=%s", err, order.ID)
+		logging.Errorf(ctx, nil, "update order error, orderID=%s", order.ID)
 		if err = broker.HandleRetry(ctx, ch, &msg); err != nil {
-			logrus.Warnf("retry_error handling retry, msgID=%s, err=%v", msg.MessageId, err)
+			err = errors.Wrapf(err, "retry_error handling retry, msgID=%s, err=%v", msg.MessageId, err)
 		}
 		return
 	}

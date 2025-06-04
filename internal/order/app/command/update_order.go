@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/FacundoChan/dineflow/common/decorator"
+	"github.com/FacundoChan/dineflow/common/logging"
 	domain "github.com/FacundoChan/dineflow/order/domain/order"
 	"github.com/sirupsen/logrus"
 )
@@ -32,14 +33,16 @@ func NewUpdateOrderHandler(orderRepo domain.Repository, logger *logrus.Entry, me
 }
 
 func (c updateOrderHandler) Handle(ctx context.Context, cmd UpdateOrder) (interface{}, error) {
+	var err error
+	defer logging.WhenCommandExecute(ctx, "UpdateOrderHandler", cmd, err)
+
 	if cmd.UpdateFunc == nil {
-		logrus.Warnf("updateOrderHandler called with nil UpdateFunc, orderID=%#v", cmd.Order)
-		cmd.UpdateFunc = func(_ context.Context, order *domain.Order) (*domain.Order, error) {
-			return order, nil // do nothing
-		}
+		logrus.Panicf("updateOrderHandler called with nil UpdateFunc, orderID=%#v", cmd.Order)
+		// cmd.UpdateFunc = func(_ context.Context, order *domain.Order) (*domain.Order, error) {
+		// 	return order, nil // do nothing
+		// }
 	}
-	err := c.orderRepo.Update(ctx, cmd.Order, cmd.UpdateFunc)
-	if err != nil {
+	if err = c.orderRepo.Update(ctx, cmd.Order, cmd.UpdateFunc); err != nil {
 		return nil, err
 	}
 	return nil, nil

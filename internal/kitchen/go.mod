@@ -9,6 +9,7 @@ replace (
 
 require (
 	github.com/FacundoChan/dineflow/common v0.0.0-00010101000000-000000000000
+	github.com/pkg/errors v0.9.1
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.1

@@ -5,11 +5,13 @@ import (
 
 	"github.com/FacundoChan/dineflow/common/decorator"
 	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/FacundoChan/dineflow/common/tracing"
 	"github.com/FacundoChan/dineflow/payment/domain"
 	"github.com/sirupsen/logrus"
 )
 
+// TODO: ACL Cleaning
 type CreatePayment struct {
 	Order *orderpb.Order
 }
@@ -34,6 +36,9 @@ func NewCreatePaymentHandler(processor domain.Processor, orderGRPC OrderService,
 
 // Handle implements decorator.CommandHandler.
 func (c createPaymentHandler) Handle(ctx context.Context, cmd CreatePayment) (string, error) {
+	var err error
+	defer logging.WhenCommandExecute(ctx, "CreatePaymentHandler", cmd, err)
+
 	_, span := tracing.Start(ctx, "stripe_processor.create_payment_link")
 	defer span.End()
 
@@ -41,7 +46,7 @@ func (c createPaymentHandler) Handle(ctx context.Context, cmd CreatePayment) (st
 	if err != nil {
 		return "", err
 	}
-	logrus.Infof("create payment link(%s) for order: %s", link, cmd.Order.CustomerID)
+
 	newOrder := &orderpb.Order{
 		ID:          cmd.Order.ID,
 		CustomerID:  cmd.Order.CustomerID,
@@ -50,7 +55,6 @@ func (c createPaymentHandler) Handle(ctx context.Context, cmd CreatePayment) (st
 		PaymentLink: link,
 	}
 
-	logrus.Debug("UpdateOrder in createPaymentHandler")
 	err = c.orderGRPC.UpdateOrder(ctx, newOrder)
 	if err != nil {
 		logrus.WithError(err).Debug("UpdateOrder failed")

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
@@ -13,16 +14,16 @@ func SetNX(ctx context.Context, client *redis.Client, key, value string, ttl tim
 	now := time.Now()
 	defer func() {
 		l := logrus.WithContext(ctx).WithFields(logrus.Fields{
-			"start": now,
-			"key":   key,
-			"value": value,
-			"err":   err,
-			"cost":  time.Since(now).Milliseconds(),
+			"start":       now,
+			"key":         key,
+			"value":       value,
+			logging.Error: err,
+			logging.Cost:  time.Since(now).Milliseconds(),
 		})
 		if err == nil {
-			l.Info("redis_setnx_success")
+			l.Info("_redis_setnx_success")
 		} else {
-			l.Info("redis_setnx_error")
+			l.Info("_redis_setnx_error")
 		}
 	}()
 
@@ -39,15 +40,15 @@ func Del(ctx context.Context, client *redis.Client, key string) (err error) {
 	now := time.Now()
 	defer func() {
 		l := logrus.WithContext(ctx).WithFields(logrus.Fields{
-			"start": now,
-			"key":   key,
-			"err":   err,
-			"cost":  time.Since(now).Milliseconds(),
+			"start":       now,
+			"key":         key,
+			logging.Error: err,
+			logging.Cost:  time.Since(now).Milliseconds(),
 		})
 		if err == nil {
-			l.Info("redis_del_success")
+			l.Info("_redis_del_success")
 		} else {
-			l.Info("redis_del_error")
+			l.Info("_redis_del_error")
 		}
 	}()
 

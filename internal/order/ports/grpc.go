@@ -36,7 +36,7 @@ func (G GRPCServer) CreateOrder(ctx context.Context, request *orderpb.CreateOrde
 }
 
 func (G GRPCServer) UpdateOrder(ctx context.Context, request *orderpb.Order) (_ *emptypb.Empty, err error) {
-	logrus.Infof("order_rpc request_in: %+v", request)
+	logrus.WithContext(ctx).Infof("order_rpc request_in: %+v", request)
 	order, err := domain.NewOrder(request.ID,
 		request.CustomerID,
 		request.Status,

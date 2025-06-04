@@ -8,6 +8,7 @@ import (
 
 	"github.com/FacundoChan/dineflow/common/decorator"
 	"github.com/FacundoChan/dineflow/common/handler/redis"
+	"github.com/FacundoChan/dineflow/common/logging"
 	domainStripe "github.com/FacundoChan/dineflow/stock/domain"
 	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
 	"github.com/FacundoChan/dineflow/stock/entity"
@@ -60,7 +61,7 @@ func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfIte
 
 	defer func() {
 		if err := unlock(ctx, getLockKey(query)); err != nil {
-			logrus.Warnf("redis unlock failed, err=%v", err)
+			logging.Warnf(ctx, nil, "redis unlock failed, err=%v", err)
 		}
 	}()
 
@@ -69,7 +70,7 @@ func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfIte
 	for _, item := range query.Items {
 		priceID, err := c.stripeAPI.GetPriceByProductID(ctx, item.ID)
 		if err != nil || priceID == "" {
-			logrus.Warnf("GetPriceByProductID error, item ID=%s, err=%v", item.ID, err)
+			logging.Warnf(ctx, nil, "GetPriceByProductID error, item ID=%s, err=%v", item.ID, err)
 			return nil, err
 		}
 		res = append(res, &entity.Item{

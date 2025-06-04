@@ -5,6 +5,7 @@ import (
 
 	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
 	"github.com/FacundoChan/dineflow/common/genproto/stockpb"
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,7 +17,10 @@ func NewStockGRPC(client stockpb.StockServiceClient) *StockGRPC {
 	return &StockGRPC{client: client}
 }
 
-func (s StockGRPC) GetItems(ctx context.Context, itemsID []string) ([]*orderpb.Item, error) {
+func (s StockGRPC) GetItems(ctx context.Context, itemsID []string) (items []*orderpb.Item, err error) {
+	_, dLog := logging.WhenRequest(ctx, "StockGRPC.GetItems", items)
+	defer dLog(items, &err)
+
 	response, err := s.client.GetItems(ctx, &stockpb.GetItemsRequest{
 		ItemIDs: itemsID,
 	})
@@ -28,12 +32,12 @@ func (s StockGRPC) GetItems(ctx context.Context, itemsID []string) ([]*orderpb.I
 
 }
 
-func (s StockGRPC) CheckIfItemsInStock(ctx context.Context, items []*orderpb.ItemWithQuantity) (*stockpb.CheckIfItemsInStockResponse, error) {
-	response, err := s.client.CheckIfItemsInStock(ctx, &stockpb.CheckIfItemsInStockRequest{
+func (s StockGRPC) CheckIfItemsInStock(ctx context.Context, items []*orderpb.ItemWithQuantity) (response *stockpb.CheckIfItemsInStockResponse, err error) {
+	_, dLog := logging.WhenRequest(ctx, "StockGRPC.CheckIfItemsInStock", items)
+	defer dLog(response, &err)
+	return s.client.CheckIfItemsInStock(ctx, &stockpb.CheckIfItemsInStockRequest{
 		Items: items,
 	})
-	logrus.Info("gRPC CheckIfItemsInStock response:", response)
-	return response, err
 }
 
 func (s StockGRPC) GetAllProducts(ctx context.Context) (*stockpb.GetAllProductsResponse, error) {

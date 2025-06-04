@@ -3,7 +3,6 @@ package adapters
 import (
 	"context"
 
-	"github.com/FacundoChan/dineflow/common/format"
 	domain "github.com/FacundoChan/dineflow/stock/domain/stock"
 	"github.com/FacundoChan/dineflow/stock/entity"
 	"github.com/pkg/errors"
@@ -50,10 +49,6 @@ func (m MySQLStockRepository) GetAllProducts(ctx context.Context) ([]*entity.Pro
 	if err != nil {
 		return nil, err
 	}
-
-	logrus.WithFields(logrus.Fields{
-		"items": format.ToString(data),
-	}).Debug("[data]")
 
 	for _, d := range data {
 		result = append(result, &entity.Product{

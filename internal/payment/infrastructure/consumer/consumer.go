@@ -7,8 +7,10 @@ import (
 
 	"github.com/FacundoChan/dineflow/common/broker"
 	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/FacundoChan/dineflow/payment/app"
 	"github.com/FacundoChan/dineflow/payment/app/command"
+	"github.com/pkg/errors"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
@@ -45,38 +47,40 @@ func (c *Consumer) Listen(ch *amqp.Channel) {
 }
 
 func (c *Consumer) handleMessage(msg amqp.Delivery, q amqp.Queue, ch *amqp.Channel) {
-	logrus.Infof("Received message from %s: %s", q.Name, msg.Body)
-
 	ctx := broker.ExtractRabbitMQHeaders(context.Background(), msg.Headers)
 	tr := otel.Tracer("rabbit-mq")
 	_, span := tr.Start(ctx, fmt.Sprintf("rabbit-mq.%s.consume", q.Name))
 	defer span.End()
 
+	logging.Infof(ctx, nil, "Payment received a message from %s, msg=%v", q.Name, string(msg.Body))
+
 	var err error
 	defer func() {
 		if err != nil {
+			logging.Warnf(ctx, nil, "failed to consumed message from %v, msg=%v err: %v", q.Name, msg, err)
 			_ = msg.Nack(false, false)
 		} else {
+			logging.Infof(ctx, nil, "comsumed message successfully from %v, msg=%v", q.Name, msg)
 			_ = msg.Ack(false)
 		}
 	}()
 
+	// TODO: ACL Cleaning
 	order := &orderpb.Order{}
-	if err := json.Unmarshal(msg.Body, order); err != nil {
-		logrus.Infof("failed to unmarshal msg to order, err: %v", err)
+	if err = json.Unmarshal(msg.Body, order); err != nil {
+		err = errors.Wrap(err, "failed to unmarshal msg to order")
 		return
 	}
 
-	if _, err := c.app.Commands.CreatePayment.Handle(ctx, command.CreatePayment{
+	if _, err = c.app.Commands.CreatePayment.Handle(ctx, command.CreatePayment{
 		Order: order,
 	}); err != nil {
-		logrus.Infof("failed to create payment, err: %v", err)
+		err = errors.Wrap(err, "failed to create payment")
 		if err = broker.HandleRetry(ctx, ch, &msg); err != nil {
-			logrus.Warnf("retry_error handling retry, msgID=%s, err=%v", msg.MessageId, err)
+			err = errors.Wrapf(err, "retry_error handling retry, msgID=%s, err=%v", msg.MessageId, err)
 		}
 		return
 	}
 
 	span.AddEvent("payment.created")
-	logrus.Info("successfully consumed")
 }

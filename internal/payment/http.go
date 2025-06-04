@@ -1,17 +1,17 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/FacundoChan/dineflow/common/broker"
 	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/FacundoChan/dineflow/payment/domain"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -34,12 +34,22 @@ func (h *PaymentHandler) RegisterRoutes(c *gin.Engine) {
 }
 
 func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
-	logrus.Info("Got webhook from stripe")
+	logrus.WithContext(ctx.Request.Context()).Info("Got webhook from stripe")
+	var err error
+
+	defer func() {
+		if err != nil {
+			logging.Warnf(ctx.Request.Context(), nil, "handleWebHook err=%v", err)
+		} else {
+			logging.Infof(ctx.Request.Context(), nil, "handleWebHook success")
+		}
+	}()
+
 	const MaxBodyBytes = int64(65536)
 	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, MaxBodyBytes)
 	payload, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Error reading request body: %v\n", err)
+		err = errors.Wrap(err, "Error reading request body")
 		ctx.Writer.WriteHeader(http.StatusServiceUnavailable)
 		ctx.JSON(http.StatusServiceUnavailable, err)
 		return
@@ -55,7 +65,7 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 		})
 
 	if err != nil {
-		logrus.Infof("Error verifying webhook signature: %v\n", err)
+		err = errors.Wrap(err, "Error verifying webhook signature")
 		ctx.Writer.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 		ctx.JSON(http.StatusBadRequest, err)
 		return
@@ -67,18 +77,12 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 		var session stripe.CheckoutSession
 		err := json.Unmarshal(event.Data.Raw, &session)
 		if err != nil {
-			logrus.Infof("Error unmarshalling checkout session: %v\n", err)
+			err = errors.Wrap(err, "Error unmarshalling checkout session")
 			ctx.JSON(http.StatusBadRequest, err)
 			return
 		}
 
 		if session.PaymentStatus == stripe.CheckoutSessionPaymentStatusPaid {
-			logrus.Infof("payment for checkout session %s is paid", session.ID)
-			logrus.Debugf("session metadata: %+v", session.Metadata)
-
-			_, cancel := context.WithCancel(context.TODO())
-			defer cancel()
-
 			var items []*orderpb.Item
 			_ = json.Unmarshal([]byte(session.Metadata["items"]), &items)
 			marshalledOrder, err := json.Marshal(&domain.Order{
@@ -89,13 +93,14 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 				Items:       items,
 			})
 			if err != nil {
-				logrus.Infof("Error marshalling order: %v\n", err)
+				err = errors.Wrap(err, "Error marshalling order")
 				ctx.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
 
+			// TODO: MQ logging
 			tr := otel.Tracer("rabbit-mq")
-			mqCtx, span := tr.Start(ctx, fmt.Sprintf("rabbit-mq.%s.publish", broker.EventOrderPaid))
+			mqCtx, span := tr.Start(ctx.Request.Context(), fmt.Sprintf("rabbit-mq.%s.publish", broker.EventOrderPaid))
 			defer span.End()
 
 			headers := broker.InjectRabbitMQHeaders(mqCtx)
@@ -110,11 +115,11 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 				ctx.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
-			logrus.Infof("message published to %s, body: %s", broker.EventOrderPaid, string(marshalledOrder))
+			logrus.WithContext(ctx).Infof("message published to %s, body: %s", broker.EventOrderPaid, string(marshalledOrder))
 			ctx.JSON(http.StatusOK, nil)
 		}
 	default:
-		logrus.Infof("Unhandled event type: %s\n", event.Type)
+		logrus.WithContext(ctx).Infof("Unhandled event type: %s\n", event.Type)
 	}
 
 	ctx.Writer.WriteHeader(http.StatusOK)

@@ -12,6 +12,7 @@ import (
 	"github.com/FacundoChan/dineflow/common/decorator"
 	myError "github.com/FacundoChan/dineflow/common/handler/errors"
 	"github.com/FacundoChan/dineflow/common/handler/redis"
+	"github.com/FacundoChan/dineflow/common/logging"
 	"github.com/FacundoChan/dineflow/order/app/query"
 	"github.com/FacundoChan/dineflow/order/convertor"
 	domain "github.com/FacundoChan/dineflow/order/domain/order"
@@ -68,6 +69,9 @@ func NewCreateOrderHandler(
 }
 
 func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*CreateOrderResult, error) {
+	var err error
+	defer logging.WhenCommandExecute(ctx, "CreateOrderHandler", cmd, err)
+
 	// generate a hash of the order content for deduplication
 	orderHash := hashOrderContent(cmd.CustomerID, cmd.Items)
 	key := "order_dedup:" + cmd.CustomerID + ":" + orderHash

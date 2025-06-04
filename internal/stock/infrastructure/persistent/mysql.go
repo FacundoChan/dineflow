@@ -191,9 +191,10 @@ func (d *MySQL) UpdateStockPessimistic(
 func (d *MySQL) BatchGetStockByProductIDs(ctx context.Context, productIDs []string) ([]entity.StockModel, error) {
 	var result []StockModel
 	query := builder.NewStock()
-	_, deferLog := logging.WhenMySQL(ctx, "BatchGetStockByProductIDs", query)
+	fields, deferLog := logging.WhenMySQL(ctx, "BatchGetStockByProductIDs", query)
 
 	tx := query.Fill(d.db.WithContext(ctx).Clauses(clause.Returning{})).Find(&result)
+	fields["sql"] = tx.Statement.SQL.String()
 
 	defer deferLog(result, &tx.Error)
 

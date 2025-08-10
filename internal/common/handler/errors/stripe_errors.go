@@ -35,12 +35,15 @@ func ParseStripeError(err error) (int, error) {
 		return consts.ErrnoUnknownError, err
 	}
 
-	// TODO: Stripe Error Handlers
+	// Stripe Error Handlers
 	switch stripeErr.Code {
 	case "resource_missing":
 		return consts.ErrnoStripeResourceMissingError, errors.New("stripe: resource missing")
 	case "card_declined":
 		return consts.ErrnoRequestValidateError, errors.New("stripe: card declined")
+	case "rate_limit":
+		// HTTP 429: Request rate limit exceeded
+		return consts.ErrnoStripeRateLimitError, errors.New("stripe: rate limit exceeded")
 	// more mapping...
 	default:
 		return consts.ErrnoUnknownError, err

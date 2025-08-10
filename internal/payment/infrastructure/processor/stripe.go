@@ -34,7 +34,7 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 	var items []*stripe.CheckoutSessionLineItemParams
 
 	for _, item := range order.Items {
-		logrus.Debugf("adding item %+v", item)
+		// logrus.Debugf("adding item %+v", item)
 		priceID, err := s.GetPriceByProductID(ctx, item.ID)
 		if err != nil {
 			logrus.Errorf("ID: %s not found in stripe", item.ID)
@@ -74,8 +74,8 @@ func (s StripeProcessor) GetPriceByProductID(ctx context.Context, pid string) (s
 	stripe.Key = s.apiKey
 
 	result, err := product.Get(pid, &stripe.ProductParams{})
-	logrus.Debugf("PID: %s, result: %+v\n", pid, result)
-	logrus.Debugf("PID: %s, result.DefaultPrice.ID: %+v\n", pid, result.DefaultPrice.ID)
+	// logrus.Debugf("PID: %s, result: %+v\n", pid, result)
+	// logrus.Debugf("PID: %s, result.DefaultPrice.ID: %+v\n", pid, result.DefaultPrice.ID)
 	if err != nil {
 		return "", err
 	}

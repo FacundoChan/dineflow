@@ -10,8 +10,8 @@ import (
 )
 
 type UpdateOrder struct {
-	Order      *domain.Order
-	UpdateFunc func(context.Context, *domain.Order) (*domain.Order, error)
+	Order      *domain.Order                                               `json:"order"`
+	UpdateFunc func(context.Context, *domain.Order) (*domain.Order, error) `json:"-"`
 }
 
 type UpdateOrderHandler decorator.CommandHandler[UpdateOrder, interface{}]

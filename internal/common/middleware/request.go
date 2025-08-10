@@ -35,11 +35,30 @@ func requestIn(ctx *gin.Context, l *logrus.Entry) {
 }
 
 func requestOut(ctx *gin.Context, l *logrus.Entry) {
-	response, _ := ctx.Get("response")
-	start, _ := ctx.Get("request_start")
-	startTime := start.(time.Time)
+	var startTime time.Time
+	if startVal, ok := ctx.Get("request_start"); ok {
+		if t, ok := startVal.(time.Time); ok {
+			startTime = t
+		} else {
+			startTime = time.Now()
+		}
+	} else {
+		startTime = time.Now()
+	}
+
+	// Try to read response set by unified response helper; fall back safely
+	var respString string
+	if v, ok := ctx.Get("response"); ok && v != nil {
+		if b, ok := v.([]byte); ok {
+			respString = string(b)
+		} else if s, ok := v.(string); ok {
+			respString = s
+		}
+	}
+
 	l.WithContext(ctx.Request.Context()).WithFields(logrus.Fields{
 		logging.Cost:     time.Since(startTime).Milliseconds(),
-		logging.Response: string(response.([]byte)),
+		logging.Response: respString,
+		"status":         ctx.Writer.Status(),
 	}).Info("_request_out")
 }

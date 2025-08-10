@@ -180,10 +180,9 @@ func packItems(items []*entity.ItemWithQuantity) []*entity.ItemWithQuantity {
 	for _, item := range items {
 		merged[item.ID] += item.Quantity
 	}
-	for id, quantity := range merged {
-		logrus.Debugf("merged item %v with quantity: %d", id, quantity)
-
-	}
+	// for id, quantity := range merged {
+	// 	logrus.Debugf("merged item %v with quantity: %d", id, quantity)
+	// }
 	var res []*entity.ItemWithQuantity
 	for id, quantity := range merged {
 		res = append(res, &entity.ItemWithQuantity{
@@ -202,7 +201,7 @@ func hashOrderContent(customerID string, items []*entity.ItemWithQuantity) strin
 	}
 	sort.Strings(itemStrs)
 	content := customerID + ":" + fmt.Sprintf("%v", itemStrs)
-	logrus.Debugf("hashOrderContent: %s", content)
+	// logrus.Debugf("hashOrderContent: %s", content)
 	hash := sha256.Sum256([]byte(content))
 	return fmt.Sprintf("%x", hash[:])
 }

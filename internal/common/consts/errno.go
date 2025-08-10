@@ -14,6 +14,7 @@ const (
 	// Stripe error 3XXX
 	ErrnoStripeUnknownError         = 3000
 	ErrnoStripeResourceMissingError = 3001
+	ErrnoStripeRateLimitError       = 3002 // Stripe rate limit exceeded (HTTP 429)
 )
 
 var ErrMsg = map[int]string{
@@ -22,4 +23,7 @@ var ErrMsg = map[int]string{
 
 	ErrnoBindRequestError:     "bind request error",
 	ErrnoRequestValidateError: "validate request error",
+
+	// Stripe
+	ErrnoStripeRateLimitError: "stripe rate limit exceeded",
 }

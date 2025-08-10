@@ -27,8 +27,8 @@ CREATE TABLE `product_images` (
 
 INSERT INTO order_stock(product_id, name, quantity, price, description)
 VALUES
-  ('prod_S3CrGrzAS1MZsK','Cake', 20, 10, 'Description of cake, 蛋糕的介绍'),
-  ('prod_S3Cr3l2WHdiL53', 'Beef', 50, 20, 'Description of Beef, 牛排的介绍');
+  ('prod_S3CrGrzAS1MZsK','Cake', 2000, 10.00, 'Description of cake, 蛋糕的介绍'),
+  ('prod_S3Cr3l2WHdiL53', 'Beef', 5000, 20.00, 'Description of Beef, 牛排的介绍');
 
 INSERT INTO product_images(product_id, img_url)
 VALUES 

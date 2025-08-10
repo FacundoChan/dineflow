@@ -18,13 +18,11 @@ func NewStripeAPI(stripeKey string) *StripeAPI {
 	}
 }
 
+// Deprecated: remote Stripe lookup is expensive. Prefer reading local price from DB via repository.
 func (s *StripeAPI) GetPriceByProductID(ctx context.Context, pid string) (string, error) {
-	// TODO: Logging
-
+	logrus.Warn("GetPriceByProductID via Stripe is deprecated; use local price from DB")
 	stripe.Key = s.apiKey
-
 	result, err := product.Get(pid, &stripe.ProductParams{})
-	logrus.Debugf("PID: %s, result: %+v", pid, result)
 	if err != nil {
 		return "", err
 	}

@@ -33,7 +33,9 @@ func (m MySQLStockRepository) GetItems(ctx context.Context, ids []string) ([]*en
 	for _, d := range data {
 		result = append(result, &entity.Item{
 			ID:       d.ProductID,
+			Name:     d.Name,
 			Quantity: int32(d.Quantity),
+			Price:    d.Price,
 		})
 	}
 

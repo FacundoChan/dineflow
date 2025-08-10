@@ -65,18 +65,28 @@ func (c checkIfItemsInStockHandler) Handle(ctx context.Context, query CheckIfIte
 		}
 	}()
 
-	// Get PriceID from Stripe
+	// Use local DB price via repository instead of calling Stripe per item
+	// Read items' name and price from stock repository
 	var res []*entity.Item
-	for _, item := range query.Items {
-		priceID, err := c.stripeAPI.GetPriceByProductID(ctx, item.ID)
-		if err != nil || priceID == "" {
-			logging.Warnf(ctx, nil, "GetPriceByProductID error, item ID=%s, err=%v", item.ID, err)
-			return nil, err
-		}
+	ids := make([]string, 0, len(query.Items))
+	for _, it := range query.Items {
+		ids = append(ids, it.ID)
+	}
+	pricedItems, err := c.stockRepo.GetItems(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	// Map quantities back
+	qty := make(map[string]int32)
+	for _, q := range query.Items {
+		qty[q.ID] += q.Quantity
+	}
+	for _, pi := range pricedItems {
 		res = append(res, &entity.Item{
-			ID:       item.ID,
-			Quantity: item.Quantity,
-			PriceID:  priceID,
+			ID:       pi.ID,
+			Name:     pi.Name,
+			Quantity: qty[pi.ID],
+			Price:    pi.Price,
 		})
 	}
 

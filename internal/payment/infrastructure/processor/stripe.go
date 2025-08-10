@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
+	"time"
 
 	"github.com/FacundoChan/dineflow/common/genproto/orderpb"
+	"github.com/FacundoChan/dineflow/common/handler/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/checkout/session"
@@ -35,6 +38,9 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 
 	for _, item := range order.Items {
 		// logrus.Debugf("adding item %+v", item)
+		if item.Quantity < 1 {
+			return "", fmt.Errorf("item %s has invalid quantity: %d", item.ID, item.Quantity)
+		}
 		priceID, err := s.GetPriceByProductID(ctx, item.ID)
 		if err != nil {
 			logrus.Errorf("ID: %s not found in stripe", item.ID)
@@ -71,13 +77,30 @@ func (s StripeProcessor) CreatePaymentLink(ctx context.Context, order *orderpb.O
 func (s StripeProcessor) GetPriceByProductID(ctx context.Context, pid string) (string, error) {
 	// TODO: Logging
 
-	stripe.Key = s.apiKey
+	// check redis cache first
+	key := "stripe:price_id:" + pid
 
+	if val, err := redis.GetEX(ctx, redis.LocalClient(), key, 10*time.Minute); err == nil && val != "" {
+		return val, nil
+	}
+
+	// TODO: Cache Breakdown
+
+	// check price_id via Stripe API
+	stripe.Key = s.apiKey
 	result, err := product.Get(pid, &stripe.ProductParams{})
 	// logrus.Debugf("PID: %s, result: %+v\n", pid, result)
 	// logrus.Debugf("PID: %s, result.DefaultPrice.ID: %+v\n", pid, result.DefaultPrice.ID)
 	if err != nil {
 		return "", err
 	}
+
+	if result.DefaultPrice == nil || result.DefaultPrice.ID == "" {
+		return "", errors.New("stripe: product has no default price")
+	}
+
+	// Write to Redis cache
+	err = redis.SetEX(ctx, redis.LocalClient(), key, result.DefaultPrice.ID, 10*time.Minute)
+
 	return result.DefaultPrice.ID, nil
 }

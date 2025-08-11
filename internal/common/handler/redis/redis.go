@@ -60,8 +60,8 @@ func supplier(key string) any {
 		Addr:            fmt.Sprintf("%s:%s", c.IP, c.Port),
 		ReadTimeout:     c.ReadTimeout * time.Millisecond,
 		WriteTimeout:    c.WriteTimeout * time.Millisecond,
-		PoolSize:        c.PoolSize,
-		MaxActiveConns:  c.MaxConn,
+		// PoolSize:        c.PoolSize,
+		// MaxActiveConns:  c.MaxConn,
 		ConnMaxLifetime: c.ConnTimeout * time.Millisecond,
 	})
 	// Ping the Redis server to check if it's available

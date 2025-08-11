@@ -50,13 +50,16 @@ mysql:
   host: 127.0.0.1
   port: 3307
   db-name: dineflow
+  max_open_conns: 50
+  max_idle_conns: 50
+  conn_max_lifetime: 60s
 
 redis:
   local:
     ip: 127.0.0.1
     port: 6379
     pool_size: 100
-    max_connection: 100
+    max_conn: 100
     conn_timeout: 1000
     read_timeout: 1000
     write_timeout: 100

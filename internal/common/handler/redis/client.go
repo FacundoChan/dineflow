@@ -21,7 +21,7 @@ func SetNX(ctx context.Context, client *redis.Client, key, value string, ttl tim
 			logging.Cost:  time.Since(now).Milliseconds(),
 		})
 		if err == nil {
-			l.Info("_redis_setnx_success")
+			// l.Info("_redis_setnx_success")
 		} else {
 			l.Info("_redis_setnx_error")
 		}
@@ -46,7 +46,7 @@ func Del(ctx context.Context, client *redis.Client, key string) (err error) {
 			logging.Cost:  time.Since(now).Milliseconds(),
 		})
 		if err == nil {
-			l.Info("_redis_del_success")
+			// l.Info("_redis_del_success")
 		} else {
 			l.Info("_redis_del_error")
 		}
@@ -72,7 +72,7 @@ func SetEX(ctx context.Context, client *redis.Client, key, value string, expirat
 			logging.Cost:  time.Since(now).Milliseconds(),
 		})
 		if err == nil {
-			l.Info("_redis_setex_success")
+			// l.Info("_redis_setex_success")
 		} else {
 			l.Info("_redis_setex_error")
 		}
@@ -97,7 +97,7 @@ func GetEX(ctx context.Context, client *redis.Client, key string, expiration tim
 			logging.Cost:  time.Since(now).Milliseconds(),
 		})
 		if err == nil {
-			l.Info("_redis_getex_success")
+			// l.Info("_redis_getex_success")
 		} else if err == redis.Nil {
 			l.Info("_redis_getex_nil")
 		} else {

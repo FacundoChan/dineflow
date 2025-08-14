@@ -66,8 +66,7 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 
 	if err != nil {
 		err = errors.Wrap(err, "Error verifying webhook signature")
-		ctx.Writer.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -94,7 +93,7 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 			})
 			if err != nil {
 				err = errors.Wrap(err, "Error marshalling order")
-				ctx.JSON(http.StatusBadRequest, err.Error())
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 
@@ -112,15 +111,18 @@ func (h *PaymentHandler) handleWebHook(ctx *gin.Context) {
 				Headers:      headers,
 			})
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, err.Error())
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 			logrus.WithContext(ctx).Infof("message published to %s, body: %s", broker.EventOrderPaid, string(marshalledOrder))
-			ctx.JSON(http.StatusOK, nil)
+			ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
 		}
 	default:
 		logrus.WithContext(ctx).Infof("Unhandled event type: %s\n", event.Type)
 	}
 
-	ctx.Writer.WriteHeader(http.StatusOK)
+	// Ensure we end the handler only once; if nothing wrote, return 200
+	if !ctx.IsAborted() && ctx.Writer.Status() == 200 && ctx.Writer.Size() <= 0 {
+		ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
+	}
 }

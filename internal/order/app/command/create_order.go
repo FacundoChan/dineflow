@@ -82,12 +82,12 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 		return &CreateOrderResult{OrderID: orderID}, nil
 	}
 
-	q, err := c.channel.QueueDeclare(broker.EventOrderCreated, true, false, false, false, nil)
-	if err != nil {
-		return nil, err
-	}
+	// q, err := c.channel.QueueDeclare(broker.EventOrderCreated, true, false, false, false, nil)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	t := otel.Tracer("rabbit-mq")
-	ctx, span := t.Start(ctx, fmt.Sprintf("rabbit-mq.%s.publish", q.Name))
+	ctx, span := t.Start(ctx, fmt.Sprintf("rabbit-mq.%s.publish", broker.EventOrderCreated))
 	defer span.End()
 
 	validItems, err := c.validate(ctx, cmd.Items)
@@ -117,10 +117,10 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 			}
 		}
 	}
-	logrus.Debugf("create_order:\n")
-	for i, item := range validItems {
-		logrus.Debugf("     item[%d]=%v\n", i, item)
-	}
+	// logrus.Debugf("create_order:\n")
+	// for i, item := range validItems {
+	// 	logrus.Debugf("     item[%d]=%v\n", i, item)
+	// }
 
 	pendingOrder, err := domain.NewPendingOrder(cmd.CustomerID, validItems)
 	if err != nil {
@@ -142,14 +142,14 @@ func (c createOrderHandler) Handle(ctx context.Context, cmd CreateOrder) (*Creat
 		return nil, err
 	}
 	headers := broker.InjectRabbitMQHeaders(ctx)
-	err = c.channel.PublishWithContext(ctx, "", q.Name, false, false, amqp.Publishing{
+	err = c.channel.PublishWithContext(ctx, "", broker.EventOrderCreated, false, false, amqp.Publishing{
 		ContentType:  "application/json",
 		DeliveryMode: amqp.Persistent,
 		Body:         marshalledOrder,
 		Headers:      headers,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "publish event error q.Name=%s", q.Name)
+		return nil, errors.Wrapf(err, "publish event error q.Name=%s", broker.EventOrderCreated)
 	}
 
 	return &CreateOrderResult{OrderID: order.ID}, nil
@@ -180,10 +180,9 @@ func packItems(items []*entity.ItemWithQuantity) []*entity.ItemWithQuantity {
 	for _, item := range items {
 		merged[item.ID] += item.Quantity
 	}
-	for id, quantity := range merged {
-		logrus.Debugf("merged item %v with quantity: %d", id, quantity)
-
-	}
+	// for id, quantity := range merged {
+	// 	logrus.Debugf("merged item %v with quantity: %d", id, quantity)
+	// }
 	var res []*entity.ItemWithQuantity
 	for id, quantity := range merged {
 		res = append(res, &entity.ItemWithQuantity{
@@ -202,7 +201,7 @@ func hashOrderContent(customerID string, items []*entity.ItemWithQuantity) strin
 	}
 	sort.Strings(itemStrs)
 	content := customerID + ":" + fmt.Sprintf("%v", itemStrs)
-	logrus.Debugf("hashOrderContent: %s", content)
+	// logrus.Debugf("hashOrderContent: %s", content)
 	hash := sha256.Sum256([]byte(content))
 	return fmt.Sprintf("%x", hash[:])
 }

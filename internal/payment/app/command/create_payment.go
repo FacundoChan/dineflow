@@ -44,6 +44,7 @@ func (c createPaymentHandler) Handle(ctx context.Context, cmd CreatePayment) (st
 
 	link, err := c.processor.CreatePaymentLink(ctx, cmd.Order)
 	if err != nil {
+		logging.Errorf(ctx, logrus.Fields{"err": err}, "Error from processor.CreatePaymentLink, orderID=%s", cmd.Order.ID)
 		return "", err
 	}
 

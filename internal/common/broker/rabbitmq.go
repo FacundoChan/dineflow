@@ -25,8 +25,7 @@ var (
 )
 
 func Connect(user, password, host, port string) (*amqp.Channel, func() error) {
-	addr := fmt.Sprintf("amqp://%s:%s@%s:%s", user, password, host, port)
-	conn, err := amqp.Dial(addr)
+	conn, err := Dial(user, password, host, port)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -34,21 +33,30 @@ func Connect(user, password, host, port string) (*amqp.Channel, func() error) {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-
-	// exchange
-	err = ch.ExchangeDeclare(EventOrderCreated, "direct", true, false, false, false, nil)
-	if err != nil {
+	if err := InitChannel(ch); err != nil {
 		logrus.Fatal(err)
 	}
-	err = ch.ExchangeDeclare(EventOrderPaid, "direct", true, false, false, false, nil)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	if err = createDLX(ch); err != nil {
-		logrus.Fatal(err)
-	}
-
 	return ch, conn.Close
+}
+
+// Dial establishes and returns a RabbitMQ connection without opening a channel.
+func Dial(user, password, host, port string) (*amqp.Connection, error) {
+	addr := fmt.Sprintf("amqp://%s:%s@%s:%s", user, password, host, port)
+	return amqp.Dial(addr)
+}
+
+// InitChannel declares required exchanges/queues on the given channel.
+func InitChannel(ch *amqp.Channel) error {
+	if err := ch.ExchangeDeclare(EventOrderCreated, "direct", true, false, false, false, nil); err != nil {
+		return err
+	}
+	if err := ch.ExchangeDeclare(EventOrderPaid, "direct", true, false, false, false, nil); err != nil {
+		return err
+	}
+	if err := createDLX(ch); err != nil {
+		return err
+	}
+	return nil
 }
 
 func createDLX(ch *amqp.Channel) error {
